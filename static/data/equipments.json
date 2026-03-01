@@ -1,0 +1,114 @@
+[
+  {
+    "name": "ASSISTED",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-assisted.webp"
+  },
+  {
+    "name": "BAND",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-band.webp"
+  },
+  {
+    "name": "BARBELL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-barbell.webp"
+  },
+  {
+    "name": "BATTLING ROPE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Battling-Rope.webp"
+  },
+  {
+    "name": "BODY WEIGHT",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Body-weight.webp"
+  },
+  {
+    "name": "BOSU BALL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Bosu-ball.webp"
+  },
+  {
+    "name": "CABLE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Cable-1.webp"
+  },
+  {
+    "name": "DUMBBELL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Dumbbell.webp"
+  },
+  {
+    "name": "EZ BARBELL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-EZ-Barbell.webp"
+  },
+  {
+    "name": "HAMMER",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-hammer.webp"
+  },
+  {
+    "name": "KETTLEBELL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Kettlebell.webp"
+  },
+  {
+    "name": "LEVERAGE MACHINE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Leverage-machine.webp"
+  },
+  {
+    "name": "MEDICINE BALL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Medicine-Ball.webp"
+  },
+  {
+    "name": "OLYMPIC BARBELL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Olympic-barbell.webp"
+  },
+  {
+    "name": "POWER SLED",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Power-Sled.webp"
+  },
+  {
+    "name": "RESISTANCE BAND",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Resistance-Band.webp"
+  },
+  {
+    "name": "ROLL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Massage-Roller.webp"
+  },
+  {
+    "name": "ROLLBALL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Roll-Ball.webp"
+  },
+  {
+    "name": "ROPE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Jump-Rope.webp"
+  },
+  {
+    "name": "SLED MACHINE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Sled-machine.webp"
+  },
+  {
+    "name": "SMITH MACHINE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Smith-machine.webp"
+  },
+  {
+    "name": "STABILITY BALL",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Stability-ball.webp"
+  },
+  {
+    "name": "STICK",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Stick.webp"
+  },
+  {
+    "name": "SUSPENSION",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Suspension.webp"
+  },
+  {
+    "name": "TRAP BAR",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Trap-bar.webp"
+  },
+  {
+    "name": "VIBRATE PLATE",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Vibrate-Plate.webp"
+  },
+  {
+    "name": "WEIGHTED",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Weighted.webp"
+  },
+  {
+    "name": "WHEEL ROLLER",
+    "imageUrl": "https://cdn.exercisedb.dev/equipments/equipment-Wheel-Roller.webp"
+  }
+]

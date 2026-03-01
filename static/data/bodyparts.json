@@ -1,0 +1,74 @@
+[
+  {
+    "name": "BACK",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/back.webp"
+  },
+  {
+    "name": "CALVES",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/calves.webp"
+  },
+  {
+    "name": "CHEST",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/chest.webp"
+  },
+  {
+    "name": "FOREARMS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/forearms.webp"
+  },
+  {
+    "name": "HIPS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/hips.webp"
+  },
+  {
+    "name": "NECK",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/neck.webp"
+  },
+  {
+    "name": "SHOULDERS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/shoulders.webp"
+  },
+  {
+    "name": "THIGHS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/thighs.webp"
+  },
+  {
+    "name": "WAIST",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/waist.webp"
+  },
+  {
+    "name": "HANDS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/hands.webp"
+  },
+  {
+    "name": "FEET",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/feet.webp"
+  },
+  {
+    "name": "FACE",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/face.webp"
+  },
+  {
+    "name": "FULL BODY",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/fullbody.webp"
+  },
+  {
+    "name": "BICEPS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/biceps.webp"
+  },
+  {
+    "name": "UPPER ARMS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/biceps.webp"
+  },
+  {
+    "name": "TRICEPS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/triceps.webp"
+  },
+  {
+    "name": "HAMSTRINGS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/hamstrings.webp"
+  },
+  {
+    "name": "QUADRICEPS",
+    "imageUrl": "https://cdn.exercisedb.dev/bodyparts/quadriceps.webp"
+  }
+]

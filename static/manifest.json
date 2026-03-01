@@ -1,0 +1,25 @@
+{
+	"name": "FitLog - Workout Logger",
+	"short_name": "FitLog",
+	"description": "Track your workouts with a full exercise library. Log sets, reps, and weight for 199 exercises.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#09090b",
+	"theme_color": "#09090b",
+	"orientation": "portrait",
+	"categories": ["health", "fitness"],
+	"icons": [
+		{
+			"src": "/icons/icon-512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		},
+		{
+			"src": "/icons/icon-512-maskable.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		}
+	]
+}
