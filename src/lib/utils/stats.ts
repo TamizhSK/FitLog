@@ -3,9 +3,19 @@ import type { WorkoutLog } from '$lib/types/workout';
 export function calculateStreak(workouts: WorkoutLog[]): number {
 	if (workouts.length === 0) return 0;
 
-	const dates = [...new Set(workouts.map((w) => w.date))].sort().reverse();
-	const today = new Date().toISOString().split('T')[0];
-	const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+	// Only count workouts with at least one completed set
+	const meaningful = workouts.filter((w) =>
+		w.exercises.some((e) => e.sets.some((s) => s.completed))
+	);
+	if (meaningful.length === 0) return 0;
+
+	const dates = [...new Set(meaningful.map((w) => w.date))].sort().reverse();
+
+	// Use local dates — workout dates are stored as local, not UTC
+	const now = new Date();
+	const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+	const yd = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+	const yesterday = `${yd.getFullYear()}-${String(yd.getMonth() + 1).padStart(2, '0')}-${String(yd.getDate()).padStart(2, '0')}`;
 
 	// Streak must include today or yesterday
 	if (dates[0] !== today && dates[0] !== yesterday) return 0;

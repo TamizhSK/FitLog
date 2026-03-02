@@ -20,7 +20,11 @@
 		finishWorkout,
 		cancelWorkout,
 		restoreWorkout,
-		formatDuration
+		formatDuration,
+		startRest,
+		isRestActive,
+		didRestCompleteNaturally,
+		clearRestCompletedFlag
 	} from '$lib/stores/workout.svelte';
 	import {
 		loadExercises,
@@ -31,13 +35,12 @@
 	import { getLastWorkoutForExercise } from '$lib/db/workouts';
 	import { getPreferences } from '$lib/stores/preferences.svelte';
 	import { isWeighted } from '$lib/utils/exercise';
-	import { tapFeedback, startFeedback, finishFeedback } from '$lib/utils/feedback';
+	import { tapFeedback, startFeedback, finishFeedback, beep } from '$lib/utils/feedback';
 	import ExerciseLogger from '$lib/components/workout/ExerciseLogger.svelte';
-	import RestTimer from '$lib/components/workout/RestTimer.svelte';
+	import WorkoutRing from '$lib/components/workout/WorkoutRing.svelte';
 	import type { WorkoutLog, SetLog } from '$lib/types/workout';
 	import confetti from 'canvas-confetti';
 	import {
-		Timer,
 		ChevronLeft,
 		ChevronRight,
 		Square,
@@ -55,7 +58,6 @@
 		Trash2
 	} from '@lucide/svelte';
 
-	let showRestTimer = $state(false);
 	let showExerciseList = $state(false);
 	let showAddExercise = $state(false);
 	let finishedWorkout = $state<WorkoutLog | null>(null);
@@ -107,9 +109,21 @@
 		previousSetsMap = map;
 	}
 
+	// Watch for rest timer natural completion → play alert
+	$effect(() => {
+		if (didRestCompleteNaturally()) {
+			beep(880, 150, 0.3);
+			setTimeout(() => beep(880, 150, 0.3), 400);
+			if (prefs.vibrationEnabled && navigator.vibrate) {
+				navigator.vibrate([200, 100, 200]);
+			}
+			clearRestCompletedFlag();
+		}
+	});
+
 	function handleSetCompleted() {
 		tapFeedback();
-		showRestTimer = true;
+		startRest(prefs.restTimerDefault);
 	}
 
 	async function handleFinish() {
@@ -133,10 +147,6 @@
 			cancelWorkout();
 			goto('/workout');
 		}
-	}
-
-	function handleRestComplete() {
-		showRestTimer = false;
 	}
 
 	function handleStartSession() {
@@ -207,22 +217,22 @@
 			</p>
 		</div>
 
-		<div class="grid w-full max-w-sm grid-cols-3 gap-2 sm:gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-			<div class="rounded-lg border border-border p-2.5 text-center sm:p-4">
+		<div class="grid w-full max-w-sm grid-cols-3 gap-2 sm:gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+			<div class="fl-surface p-2.5 text-center sm:p-4">
 				<Clock class="mx-auto h-3.5 w-3.5 text-blue-400" />
 				<p class="mt-1 text-lg font-bold tabular-nums sm:text-2xl">
 					{formatDuration(finishedWorkout.duration)}
 				</p>
 				<p class="text-[10px] text-muted-foreground sm:text-xs">Duration</p>
 			</div>
-			<div class="rounded-lg border border-border p-2.5 text-center sm:p-4">
+			<div class="fl-surface p-2.5 text-center sm:p-4">
 				<Dumbbell class="mx-auto h-3.5 w-3.5 text-green-400" />
 				<p class="mt-1 text-lg font-bold tabular-nums sm:text-2xl">
 					{finishedWorkout.exercises.length}
 				</p>
 				<p class="text-[10px] text-muted-foreground sm:text-xs">Exercises</p>
 			</div>
-			<div class="rounded-lg border border-border p-2.5 text-center sm:p-4">
+			<div class="fl-surface p-2.5 text-center sm:p-4">
 				<Flame class="mx-auto h-3.5 w-3.5 text-orange-400" />
 				<p class="mt-1 text-lg font-bold tabular-nums sm:text-2xl">
 					{finishedWorkout.exercises.reduce(
@@ -252,7 +262,7 @@
 
 		<div class="w-full max-w-sm space-y-2 text-left animate-in fade-in slide-in-from-bottom-5 duration-500 delay-400">
 			{#each finishedWorkout.exercises as ex}
-				<div class="rounded-lg border border-border p-3">
+				<div class="fl-surface p-3">
 					<p class="text-sm font-medium">{ex.exerciseName}</p>
 					<p class="text-xs text-muted-foreground">
 						{ex.sets.filter((s) => s.completed).length} sets completed
@@ -285,16 +295,16 @@
 
 		<!-- Exercise list for setup -->
 		{#if exercises.length === 0}
-			<div class="rounded-xl border border-dashed border-border py-12 text-center">
-				<Dumbbell class="mx-auto mb-3 h-10 w-10 text-muted-foreground/20" />
-				<p class="text-sm text-muted-foreground">No exercises yet</p>
-				<p class="mt-1 text-xs text-muted-foreground">Search and add exercises below</p>
+			<div class="fl-surface flex flex-col items-center py-12 text-center" style="border-style: dashed">
+				<Dumbbell class="mb-3 h-10 w-10 text-muted-foreground/15" />
+				<p class="text-sm text-muted-foreground/60">No exercises yet</p>
+				<p class="mt-1 text-xs text-muted-foreground/40">Search and add exercises below</p>
 			</div>
 		{:else}
 			<div class="space-y-3">
 				{#each exercises as ae, exIdx (ae.exercise.exerciseId)}
 					<div
-						class="rounded-lg border border-border p-3 space-y-3"
+						class="fl-surface p-3 space-y-3"
 						transition:slide={{ duration: 200 }}
 					>
 						<!-- Exercise header with remove -->
@@ -422,7 +432,7 @@
 
 		{#if showAddExercise}
 			<div
-				class="space-y-2 rounded-lg border border-border p-3"
+				class="fl-surface space-y-2 p-3"
 				transition:fly={{ y: 10, duration: 200 }}
 			>
 				<div class="relative">
@@ -467,38 +477,35 @@
 <!-- SESSION PHASE: Timer running, check off sets -->
 {:else if ready && active && timerOn}
 	<div class="space-y-4">
-		<!-- Header -->
+		<!-- Header bar -->
 		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-2">
-				<Timer class="h-4 w-4 text-primary" />
-				<span class="font-mono text-xl font-bold tabular-nums tracking-tight text-primary">{formatDuration(elapsed)}</span>
-			</div>
-			<div class="flex items-center gap-1.5 sm:gap-2">
+			<Button
+				variant="ghost"
+				size="sm"
+				onclick={handleCancel}
+				class="min-h-[40px] text-muted-foreground sm:min-h-[32px]"
+			>
+				<X class="mr-1 h-3 w-3" />
+				Cancel
+			</Button>
+			{#if exercises.length > 0}
 				<Button
-					variant="ghost"
 					size="sm"
-					onclick={handleCancel}
-					class="min-h-[40px] text-muted-foreground sm:min-h-[32px]"
+					onclick={handleFinish}
+					class="min-h-[40px] gap-1 sm:min-h-[32px]"
 				>
-					<X class="mr-1 h-3 w-3" />
-					Cancel
+					<Square class="h-3 w-3" />
+					Finish
 				</Button>
-				{#if exercises.length > 0}
-					<Button
-						size="sm"
-						onclick={handleFinish}
-						class="min-h-[40px] gap-1 sm:min-h-[32px]"
-					>
-						<Square class="h-3 w-3" />
-						Finish
-					</Button>
-				{/if}
-			</div>
+			{/if}
 		</div>
+
+		<!-- Workout Ring -->
+		<WorkoutRing />
 
 		<!-- Quick stats -->
 		{#if exercises.length > 0}
-			<div class="flex gap-4 text-xs text-muted-foreground">
+			<div class="flex justify-center gap-4 text-xs text-muted-foreground">
 				<span class="flex items-center gap-1">
 					<Flame class="h-3 w-3 text-orange-400" />
 					{totalCompletedSets()} sets
@@ -512,7 +519,7 @@
 
 		<!-- Exercise navigation -->
 		{#if exercises.length > 1}
-			<div class="flex items-center justify-between rounded-lg bg-muted/50 p-1.5 sm:p-2">
+			<div class="fl-surface flex items-center justify-between p-1.5 sm:p-2">
 				<button
 					onclick={() => goToExercise(currentIdx - 1)}
 					disabled={currentIdx === 0}
@@ -542,7 +549,7 @@
 		<!-- Exercise list drawer -->
 		{#if showExerciseList}
 			<div
-				class="space-y-1 rounded-lg border border-border p-2"
+				class="fl-surface space-y-1 p-2"
 				transition:fly={{ y: -10, duration: 200 }}
 			>
 				{#each exercises as ae, i}
@@ -581,11 +588,6 @@
 			{/key}
 		{/if}
 	</div>
-
-	<!-- Rest Timer Overlay -->
-	{#if showRestTimer}
-		<RestTimer onComplete={handleRestComplete} onSkip={handleRestComplete} />
-	{/if}
 
 <!-- Loading -->
 {:else if !ready}

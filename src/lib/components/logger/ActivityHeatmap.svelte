@@ -61,8 +61,10 @@
 	});
 
 	// Compute max score for the selected year only — prevents cross-year skew.
-	// $derived.by() is the correct pattern for block-body derivations in Svelte 5;
-	// IIFEs inside $derived() can break the compiler's reactivity tracking.
+	// Floor of 500 ensures trivial workouts (1-rep stretches, test entries) stay
+	// in the lightest bucket. A single completed set scores ~25 base points;
+	// sqrt(25)/sqrt(500) = 0.22 → lightest color. Real sessions (score 150+)
+	// correctly land in strong/peak buckets.
 	let yearMax = $derived.by(() => {
 		const year = selectedYear ?? new Date().getFullYear();
 		const prefix = `${year}-`;
@@ -70,17 +72,17 @@
 		for (const [dateStr, score] of data) {
 			if (dateStr.startsWith(prefix) && score > max) max = score;
 		}
-		return Math.max(max, 1);
+		return Math.max(max, 500);
 	});
 
 	function getColor(count: number): string {
 		if (count === 0) return 'var(--muted)';
-		// Log scale prevents a single heavy day from washing out everything else
-		const ratio = Math.log(count + 1) / Math.log(yearMax + 1);
-		if (ratio <= 0.2) return 'oklch(0.527 0.154 150.069)';
-		if (ratio <= 0.4) return 'oklch(0.596 0.145 163.225)';
-		if (ratio <= 0.7) return 'oklch(0.696 0.17 162.48)';
-		return 'oklch(0.765 0.177 163.223)';
+		// Sqrt scaling with wider color steps + hue shift for clear visual separation
+		const ratio = Math.sqrt(count) / Math.sqrt(yearMax);
+		if (ratio <= 0.25) return 'oklch(0.45 0.08 55)';   // muted warm brown
+		if (ratio <= 0.50) return 'oklch(0.58 0.16 48)';   // medium orange
+		if (ratio <= 0.75) return 'oklch(0.70 0.21 42)';   // vivid orange
+		return 'oklch(0.82 0.22 38)';                       // bright hot orange
 	}
 
 	interface DayCell {
@@ -267,10 +269,10 @@
 	<div class="mt-2 flex items-center justify-end gap-1 text-[10px] text-muted-foreground">
 		<span>Less</span>
 		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: var(--muted)"></div>
-		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.527 0.154 150.069)"></div>
-		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.596 0.145 163.225)"></div>
-		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.696 0.17 162.48)"></div>
-		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.765 0.177 163.223)"></div>
+		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.45 0.08 55)"></div>
+		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.58 0.16 48)"></div>
+		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.70 0.21 42)"></div>
+		<div class="h-[9px] w-[9px] rounded-sm" style="background-color: oklch(0.82 0.22 38)"></div>
 		<span>More</span>
 	</div>
 </div>

@@ -13,6 +13,8 @@ function applyTheme(t: Theme) {
 	if (!browser) return;
 	const resolved = t === 'system' ? getSystemPreference() : t;
 	document.documentElement.classList.toggle('dark', resolved === 'dark');
+	const meta = document.querySelector('meta[name="theme-color"]');
+	if (meta) meta.setAttribute('content', resolved === 'dark' ? '#c2570a' : '#e8690b');
 }
 
 export function initTheme() {

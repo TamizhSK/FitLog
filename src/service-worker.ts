@@ -65,12 +65,13 @@ sw.addEventListener('fetch', (event) => {
 	}
 
 	// Exercise videos: cache-on-demand (don't precache 38MB of videos)
+	// Skip partial responses (206) — Cache API doesn't support them
 	if (url.pathname.includes('/exercises/videos/')) {
 		event.respondWith(
 			caches.match(event.request).then((cached) => {
 				if (cached) return cached;
 				return fetch(event.request).then((response) => {
-					if (response.ok) {
+					if (response.ok && response.status !== 206) {
 						const clone = response.clone();
 						caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
 					}

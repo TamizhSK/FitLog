@@ -16,6 +16,14 @@ let currentIndex = $state(0);
 let elapsedSeconds = $state(0);
 let timerInterval = $state<ReturnType<typeof setInterval> | null>(null);
 
+// Rest timer state
+let restActive = $state(false);
+let restRemaining = $state(0);
+let restTotal = $state(0);
+let restStartedAt = $state<number | null>(null);
+let restInterval = $state<ReturnType<typeof setInterval> | null>(null);
+let restCompletedNaturally = $state(false);
+
 const AUTOSAVE_KEY = 'fitlog-active-workout';
 
 export function isWorkoutActive(): boolean {
@@ -136,6 +144,7 @@ export function removeSet(exerciseIndex: number, setIndex: number) {
 
 export async function finishWorkout(): Promise<WorkoutLog> {
 	stopTimer();
+	stopRest();
 	const endTime = new Date().toISOString();
 
 	const now = new Date();
@@ -164,6 +173,7 @@ export async function finishWorkout(): Promise<WorkoutLog> {
 
 export function cancelWorkout() {
 	stopTimer();
+	stopRest();
 	clearAutosave();
 	resetState();
 }
@@ -251,6 +261,73 @@ function autosave() {
 function clearAutosave() {
 	if (!browser) return;
 	localStorage.removeItem(AUTOSAVE_KEY);
+}
+
+// --- Rest Timer ---
+
+export function startRest(seconds: number) {
+	stopRest();
+	restTotal = seconds;
+	restRemaining = seconds;
+	restStartedAt = Date.now();
+	restActive = true;
+	restCompletedNaturally = false;
+	restInterval = setInterval(() => {
+		if (restStartedAt) {
+			const elapsed = Math.floor((Date.now() - restStartedAt) / 1000);
+			restRemaining = Math.max(0, restTotal - elapsed);
+			if (restRemaining <= 0) {
+				restCompletedNaturally = true;
+				stopRest();
+			}
+		}
+	}, 250);
+}
+
+export function adjustRest(delta: number) {
+	if (!restActive) return;
+	restTotal = Math.max(15, restTotal + delta);
+	// Shift the start time back/forward to account for adjustment
+	if (restStartedAt) {
+		restStartedAt += delta * 1000;
+	}
+	const elapsed = restStartedAt ? Math.floor((Date.now() - restStartedAt) / 1000) : 0;
+	restRemaining = Math.max(0, restTotal - elapsed);
+}
+
+export function skipRest() {
+	restCompletedNaturally = false;
+	stopRest();
+}
+
+function stopRest() {
+	restActive = false;
+	restRemaining = 0;
+	restStartedAt = null;
+	if (restInterval) {
+		clearInterval(restInterval);
+		restInterval = null;
+	}
+}
+
+export function isRestActive(): boolean {
+	return restActive;
+}
+
+export function getRestRemaining(): number {
+	return restRemaining;
+}
+
+export function getRestTotal(): number {
+	return restTotal;
+}
+
+export function didRestCompleteNaturally(): boolean {
+	return restCompletedNaturally;
+}
+
+export function clearRestCompletedFlag() {
+	restCompletedNaturally = false;
 }
 
 export function formatDuration(seconds: number): string {
