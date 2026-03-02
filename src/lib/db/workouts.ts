@@ -27,15 +27,50 @@ export async function deleteWorkout(id: string): Promise<void> {
 	await db.delete('workouts', id);
 }
 
+/**
+ * Calculate workout intensity score based on volume, reps, and duration.
+ * Returns a weighted score that represents workout effort.
+ */
+function calculateWorkoutScore(workout: WorkoutLog): number {
+	let score = 0;
+	
+	for (const exercise of workout.exercises) {
+		for (const set of exercise.sets) {
+			if (!set.completed) continue;
+			
+			// Weight-based exercises: weight × reps
+			if (set.weight && set.weight > 0) {
+				score += set.weight * set.reps;
+			}
+			// Bodyweight or duration-based: reps or duration
+			else if (set.duration && set.duration > 0) {
+				// Duration exercises (planks, etc.): 1 point per second
+				score += set.duration;
+			} else {
+				// Bodyweight reps: 5 points per rep (arbitrary baseline)
+				score += set.reps * 5;
+			}
+		}
+	}
+	
+	return score;
+}
+
+/**
+ * Get workout dates map with intensity scores instead of just set counts.
+ * Returns Map<date, score> where score represents workout effort.
+ */
 export async function getWorkoutDatesMap(): Promise<Map<string, number>> {
 	const db = await getDB();
 	const all = await db.getAll('workouts');
 	const map = new Map<string, number>();
-	for (const w of all) {
-		const count = map.get(w.date) ?? 0;
-		const exercises = w.exercises.reduce((sum, ex) => sum + ex.sets.filter((s) => s.completed).length, 0);
-		map.set(w.date, count + exercises);
+	
+	for (const workout of all) {
+		const currentScore = map.get(workout.date) ?? 0;
+		const workoutScore = calculateWorkoutScore(workout);
+		map.set(workout.date, currentScore + workoutScore);
 	}
+	
 	return map;
 }
 

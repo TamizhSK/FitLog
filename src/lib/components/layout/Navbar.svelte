@@ -3,7 +3,7 @@
 	import ThemeToggle from './ThemeToggle.svelte';
 </script>
 
-<header class="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-sm">
+<header class="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-sm safe-top">
 	<div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
 		<a href="/" class="flex items-center gap-2 font-bold text-lg">
 			<Dumbbell class="h-5 w-5 text-primary" />

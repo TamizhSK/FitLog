@@ -189,10 +189,25 @@
 		class="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center"
 		in:scale={{ duration: 300, start: 0.9 }}
 	>
-		<Trophy class="h-16 w-16 text-amber-400" />
-		<h1 class="text-2xl font-bold">Workout Complete!</h1>
+		<!-- Trophy with ambient glow — moment of recognition -->
+		<div class="animate-in zoom-in duration-500 relative flex items-center justify-center">
+			<div class="absolute h-24 w-24 rounded-full bg-amber-400/15 blur-xl"></div>
+			<Trophy class="relative h-16 w-16 text-amber-400 drop-shadow-lg" />
+		</div>
+		<div class="space-y-2 animate-in fade-in slide-in-from-bottom-3 duration-500 delay-100">
+			<h1 class="text-2xl font-bold">Workout Complete!</h1>
+			<p class="text-sm text-muted-foreground">
+				{#if finishedWorkout.duration >= 3600}
+					Over an hour. That's serious commitment.
+				{:else if finishedWorkout.duration >= 1800}
+					Solid session. Consistency builds strength.
+				{:else}
+					Showed up and got it done. That's what counts.
+				{/if}
+			</p>
+		</div>
 
-		<div class="grid w-full max-w-sm grid-cols-3 gap-2 sm:gap-4">
+		<div class="grid w-full max-w-sm grid-cols-3 gap-2 sm:gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
 			<div class="rounded-lg border border-border p-2.5 text-center sm:p-4">
 				<Clock class="mx-auto h-3.5 w-3.5 text-blue-400" />
 				<p class="mt-1 text-lg font-bold tabular-nums sm:text-2xl">
@@ -219,7 +234,7 @@
 			</div>
 		</div>
 
-		<div class="flex items-center gap-2 text-sm text-muted-foreground">
+		<div class="flex items-center gap-2 text-sm text-muted-foreground animate-in fade-in duration-500 delay-300">
 			<TrendingUp class="h-4 w-4" />
 			<span>
 				Total volume: {formatVol(
@@ -235,7 +250,7 @@
 			</span>
 		</div>
 
-		<div class="w-full max-w-sm space-y-2 text-left">
+		<div class="w-full max-w-sm space-y-2 text-left animate-in fade-in slide-in-from-bottom-5 duration-500 delay-400">
 			{#each finishedWorkout.exercises as ex}
 				<div class="rounded-lg border border-border p-3">
 					<p class="text-sm font-medium">{ex.exerciseName}</p>
@@ -246,7 +261,7 @@
 			{/each}
 		</div>
 
-		<Button href="/" size="lg" class="min-h-[48px] gap-2 px-8">Done</Button>
+		<Button href="/" size="lg" class="min-h-[48px] gap-2 px-8 animate-in fade-in zoom-in duration-500 delay-500">Done</Button>
 	</div>
 
 <!-- SETUP PHASE: Configure exercises before starting timer -->
@@ -456,7 +471,7 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-2">
 				<Timer class="h-4 w-4 text-primary" />
-				<span class="font-mono text-lg font-bold tabular-nums">{formatDuration(elapsed)}</span>
+				<span class="font-mono text-xl font-bold tabular-nums tracking-tight text-primary">{formatDuration(elapsed)}</span>
 			</div>
 			<div class="flex items-center gap-1.5 sm:gap-2">
 				<Button

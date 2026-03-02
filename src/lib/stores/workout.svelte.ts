@@ -138,9 +138,12 @@ export async function finishWorkout(): Promise<WorkoutLog> {
 	stopTimer();
 	const endTime = new Date().toISOString();
 
+	const now = new Date();
+	const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
 	const log: WorkoutLog = {
 		id: crypto.randomUUID(),
-		date: new Date().toISOString().split('T')[0],
+		date: localDate,
 		startTime: startTime || endTime,
 		endTime,
 		duration: elapsedSeconds,

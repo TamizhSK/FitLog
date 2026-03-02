@@ -37,7 +37,7 @@
 <div class="flex min-h-[100dvh] flex-col bg-background text-foreground">
 	<Navbar />
 
-	<main class="mx-auto w-full max-w-5xl flex-1 px-4 py-4 pb-[72px] sm:py-6 md:pb-6">
+	<main class="mx-auto w-full max-w-5xl flex-1 px-4 pt-4 pb-[calc(72px+env(safe-area-inset-bottom,0px))] sm:pt-6 md:pb-6">
 		{@render children()}
 	</main>
 

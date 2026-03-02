@@ -44,34 +44,42 @@
 
 <div class="space-y-8">
 	<!-- Greeting -->
-	<div class="space-y-1">
+	<div class="space-y-1 animate-in fade-in slide-in-from-bottom-2 duration-500">
 		<h1 class="text-2xl font-bold tracking-tight">{greeting}{prefs.userName ? `, ${prefs.userName}` : ''}</h1>
 		<p class="text-sm text-muted-foreground">{today}</p>
 	</div>
 
-	<!-- Start Workout CTA -->
-	<Button href="/workout" size="lg" class="w-full gap-2 py-6 text-base">
-		<Play class="h-5 w-5" />
-		Start Workout
-	</Button>
+	<!-- Start Workout CTA — primary action, deserves clear visual weight -->
+	<div class="animate-in fade-in slide-in-from-bottom-3 duration-500 delay-100">
+		<Button
+			href="/workout"
+			size="lg"
+			class="group relative w-full gap-2 overflow-hidden py-6 text-base transition-all duration-200 active:scale-[0.98] hover:scale-[1.01] hover:shadow-lg"
+		>
+			<!-- Subtle shimmer on hover — purposeful, not distracting -->
+			<span class="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-500 group-hover:translate-x-full"></span>
+			<Play class="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+			Start Workout
+		</Button>
+	</div>
 
 	<!-- Quick Stats -->
-	<div class="grid grid-cols-3 gap-2 sm:gap-3">
-		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4">
+	<div class="grid grid-cols-3 gap-2 sm:gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4 transition-all hover:border-orange-400/50 hover:bg-orange-400/5">
 			<div class="flex items-center justify-center gap-1">
 				<Flame class="h-3.5 w-3.5 text-orange-400 sm:h-4 sm:w-4" />
 				<span class="text-xl font-bold tabular-nums sm:text-2xl">{streak}</span>
 			</div>
 			<p class="mt-0.5 text-[10px] text-muted-foreground sm:mt-1 sm:text-xs">Day Streak</p>
 		</div>
-		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4">
+		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4 transition-all hover:border-blue-400/50 hover:bg-blue-400/5">
 			<div class="flex items-center justify-center gap-1">
 				<Calendar class="h-3.5 w-3.5 text-blue-400 sm:h-4 sm:w-4" />
 				<span class="text-xl font-bold tabular-nums sm:text-2xl">{weeklyStats.workoutCount}</span>
 			</div>
 			<p class="mt-0.5 text-[10px] text-muted-foreground sm:mt-1 sm:text-xs">This Week</p>
 		</div>
-		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4">
+		<div class="rounded-xl border border-border p-2.5 text-center sm:p-4 transition-all hover:border-green-400/50 hover:bg-green-400/5">
 			<div class="flex items-center justify-center gap-1">
 				<TrendingUp class="h-3.5 w-3.5 text-green-400 sm:h-4 sm:w-4" />
 				<span class="text-base font-bold tabular-nums sm:text-lg">{formatVolume(weeklyStats.totalVolume, prefs.weightUnit)}</span>
@@ -83,7 +91,7 @@
 	<Separator />
 
 	<!-- Activity Heatmap -->
-	<div class="space-y-2">
+	<div class="space-y-2 animate-in fade-in slide-in-from-bottom-5 duration-500 delay-300">
 		<h2 class="flex items-center gap-2 text-sm font-semibold">
 			<Calendar class="h-4 w-4 text-emerald-500" />
 			Activity
@@ -91,7 +99,7 @@
 		<ActivityHeatmap data={heatmapData} />
 	</div>
 
-	<!-- Recent Workouts — secondary -->
+	<!-- Recent Workouts -->
 	<div class="space-y-2">
 		<div class="flex items-center justify-between">
 			<h2 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Recent Workouts</h2>

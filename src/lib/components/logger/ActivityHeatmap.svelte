@@ -17,6 +17,7 @@
 	const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 	let hoveredDay = $state<{ date: string; count: number; x: number; y: number } | null>(null);
+	let selectedYear = $state<number | null>(null);
 
 	function toDateStr(d: Date): string {
 		const y = d.getFullYear();
@@ -25,21 +26,60 @@
 		return `${y}-${m}-${day}`;
 	}
 
-	function getMaxCount(): number {
+	function getFirstWorkoutDate(): Date | null {
+		if (data.size === 0) return null;
+		let earliest: string | null = null;
+		for (const dateStr of data.keys()) {
+			if (!earliest || dateStr < earliest) {
+				earliest = dateStr;
+			}
+		}
+		return earliest ? new Date(earliest + 'T00:00:00') : null;
+	}
+
+	function getAvailableYears(): number[] {
+		const firstDate = getFirstWorkoutDate();
+		if (!firstDate) return [new Date().getFullYear()];
+
+		const years: number[] = [];
+		const currentYear = new Date().getFullYear();
+		const startYear = firstDate.getFullYear();
+
+		for (let y = startYear; y <= currentYear; y++) {
+			years.push(y);
+		}
+		return years.reverse(); // Most recent first
+	}
+
+	let availableYears = $derived(getAvailableYears());
+
+	// Initialize selected year to current year
+	$effect(() => {
+		if (selectedYear === null && availableYears.length > 0) {
+			selectedYear = availableYears[0];
+		}
+	});
+
+	// Compute max score for the selected year only — prevents cross-year skew.
+	// $derived.by() is the correct pattern for block-body derivations in Svelte 5;
+	// IIFEs inside $derived() can break the compiler's reactivity tracking.
+	let yearMax = $derived.by(() => {
+		const year = selectedYear ?? new Date().getFullYear();
+		const prefix = `${year}-`;
 		let max = 0;
-		for (const v of data.values()) {
-			if (v > max) max = v;
+		for (const [dateStr, score] of data) {
+			if (dateStr.startsWith(prefix) && score > max) max = score;
 		}
 		return Math.max(max, 1);
-	}
+	});
 
 	function getColor(count: number): string {
 		if (count === 0) return 'var(--muted)';
-		const max = getMaxCount();
-		const ratio = count / max;
-		if (ratio <= 0.25) return 'oklch(0.527 0.154 150.069)';
-		if (ratio <= 0.5) return 'oklch(0.596 0.145 163.225)';
-		if (ratio <= 0.75) return 'oklch(0.696 0.17 162.48)';
+		// Log scale prevents a single heavy day from washing out everything else
+		const ratio = Math.log(count + 1) / Math.log(yearMax + 1);
+		if (ratio <= 0.2) return 'oklch(0.527 0.154 150.069)';
+		if (ratio <= 0.4) return 'oklch(0.596 0.145 163.225)';
+		if (ratio <= 0.7) return 'oklch(0.696 0.17 162.48)';
 		return 'oklch(0.765 0.177 163.223)';
 	}
 
@@ -57,11 +97,22 @@
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
-		const start = new Date(today);
-		start.setDate(start.getDate() - 364);
-		start.setDate(start.getDate() - start.getDay());
+		const year = selectedYear ?? today.getFullYear();
 
-		const diffMs = today.getTime() - start.getTime();
+		// Always start from Jan 1 for consistent full-year calendar (GitHub style).
+		// The year navigator already limits to years with data — no need to clip
+		// the start date within a year, which would hide January for mid-year starters.
+		const start = new Date(year, 0, 1); // Jan 1 of selected year
+
+		// Align to start of week (Sunday)
+		start.setDate(start.getDate() - start.getDay());
+		start.setHours(0, 0, 0, 0);
+
+		// End: today for current year, Dec 31 for past years
+		const end = year === today.getFullYear() ? today : new Date(year, 11, 31);
+		end.setHours(0, 0, 0, 0);
+
+		const diffMs = end.getTime() - start.getTime();
 		const totalDays = Math.floor(diffMs / (24 * 60 * 60 * 1000)) + 1;
 		const totalCols = Math.ceil(totalDays / 7);
 
@@ -72,7 +123,8 @@
 				const d = new Date(start);
 				d.setDate(d.getDate() + col * 7 + row);
 
-				if (d > today) continue;
+				// Skip dates outside the selected year or future dates
+				if (d.getFullYear() !== year || d > today) continue;
 
 				const dateStr = toDateStr(d);
 				const count = data.get(dateStr) ?? 0;
@@ -89,7 +141,7 @@
 		return { cells, monthMarkers, totalCols };
 	}
 
-	let grid = $derived(generateGrid());
+	let grid = $derived.by(generateGrid);
 
 	let svgWidth = $derived(grid.totalCols * (CELL + GAP) + LEFT_PAD);
 	let svgHeight = $derived(ROWS * (CELL + GAP) + TOP_PAD);
@@ -127,19 +179,34 @@
 </script>
 
 <div>
+	<!-- Year selector — always rendered so users know the year context -->
+	<div class="mb-3 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+		{#each availableYears as year}
+			<button
+				onclick={() => selectedYear = year}
+				class="rounded-md px-2.5 py-1 text-xs font-medium transition-all
+					{selectedYear === year
+						? 'bg-primary text-primary-foreground'
+						: 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
+			>
+				{year}
+			</button>
+		{/each}
+	</div>
+
 	<!-- Scrollable heatmap -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="overflow-x-auto"
 		role="img"
-		aria-label="Activity heatmap showing workout frequency over the past year"
+		aria-label="Activity heatmap showing workout frequency for {selectedYear ?? new Date().getFullYear()}"
 		ontouchstart={(e) => {
 			if (!(e.target as Element).closest('rect')) {
 				hoveredDay = null;
 			}
 		}}
 	>
-		<svg width={svgWidth} height={svgHeight} class="block">
+		<svg width={svgWidth} height={svgHeight} class="block transition-all duration-300">
 			<!-- Month labels -->
 			{#each grid.monthMarkers as marker}
 				<text
@@ -191,7 +258,7 @@
 				class="pointer-events-none fixed z-50 -translate-x-1/2 rounded-md bg-popover px-2.5 py-1.5 text-xs text-popover-foreground shadow-md"
 				style="left: {hoveredDay.x}px; top: {hoveredDay.y - 34}px"
 			>
-				{hoveredDay.count} {hoveredDay.count === 1 ? 'set' : 'sets'} on {formatDate(hoveredDay.date)}
+				{hoveredDay.count > 0 ? 'Workout' : 'Rest day'} on {formatDate(hoveredDay.date)}
 			</div>
 		{/if}
 	</div>
