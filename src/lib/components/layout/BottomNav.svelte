@@ -99,10 +99,7 @@
 	:global(:root:not(.dark)) .dock-item {
 		color: oklch(0 0 0 / 0.4);
 	}
-	.dock-item:active {
-		transform: scale(0.88);
-		transition: transform 0.1s ease;
-	}
+	/* Removed :active scale animation - caused jittery effect */
 
 	/* Liquid glass glow behind active icon */
 	.dock-icon-glow {

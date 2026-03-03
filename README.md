@@ -1,6 +1,15 @@
-# FitLog
+<div align="center">
+  <br>
+  <img src="static/banner.svg" alt="FitLog Banner" width="100%">
+  <br><br>
+  <a href="https://fit-log-go.vercel.app" target="_blank">Live Demo</a> •
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech</a> •
+  <a href="#getting-started">Setup</a>
+</div>
 
-**Your gym notebook, digitized.** Track workouts, crush intervals, watch streaks grow — all from your browser. No accounts. No subscriptions. No servers harvesting your data. Just you and the iron.
+Track workouts, crush intervals, watch streaks grow — all from your browser.  
+No accounts. No subscriptions. No servers harvesting your data. Just you and the iron.
 
 FitLog is a free, open-source progressive web app built for lifters, runners, and anyone who believes fitness tracking shouldn't require a monthly fee or a privacy policy longer than your workout.
 
@@ -173,3 +182,5 @@ MIT License. Use it, fork it, modify it, ship it. No attribution required, but a
 <p align="center">
   <strong>Stop paying for fitness apps. Start lifting.</strong>
 </p>
+
+Peace :)

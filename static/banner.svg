@@ -1,0 +1,55 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#18181b;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#c2570a;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#c2570a;stop-opacity:0" />
+    </radialGradient>
+    <clipPath id="roundedCorners">
+      <rect x="90" y="100" width="100" height="100" rx="20"/>
+    </clipPath>
+  </defs>
+  
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <rect width="1200" height="300" fill="url(#grid)"/>
+  <circle cx="140" cy="150" r="120" fill="url(#glow)"/>
+  
+  <rect x="90" y="100" width="100" height="100" rx="20" fill="#27272a"/>
+  
+  <image x="90" y="100" width="100" height="100" clip-path="url(#roundedCorners)" href="data:image/png;base64,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"/>
+  
+  <rect x="90" y="100" width="100" height="100" rx="20" fill="none" stroke="rgba(194,87,10,0.3)" stroke-width="1"/>
+  
+  <text x="230" y="145" font-family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif" font-size="64" font-weight="700" fill="#fafafa" letter-spacing="-0.02em">FitLog</text>
+  
+  <text x="230" y="180" font-family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="400" fill="#a1a1aa">Your gym notebook, digitized.</text>
+  
+  <g font-family="SF Mono, Monaco, Consolas, monospace" font-size="13" fill="#71717a">
+    <text x="230" y="215"><tspan fill="#c2570a">▸</tspan> Zero backend</text>
+    <text x="380" y="215"><tspan fill="#c2570a">▸</tspan> Zero cost</text>
+    <text x="500" y="215"><tspan fill="#c2570a">▸</tspan> Zero friction</text>
+    <text x="650" y="215"><tspan fill="#c2570a">▸</tspan> PWA ready</text>
+  </g>
+  
+  <g transform="translate(230, 235)">
+    <rect width="90" height="24" rx="4" fill="rgba(255,62,0,0.1)" stroke="rgba(255,62,0,0.3)" stroke-width="1"/>
+    <text x="45" y="16" font-family="SF Mono, monospace" font-size="11" font-weight="500" fill="#ff3e00" text-anchor="middle">SvelteKit</text>
+    <rect x="100" width="90" height="24" rx="4" fill="rgba(49,120,198,0.1)" stroke="rgba(49,120,198,0.3)" stroke-width="1"/>
+    <text x="145" y="16" font-family="SF Mono, monospace" font-size="11" font-weight="500" fill="#3178c6" text-anchor="middle">TypeScript</text>
+    <rect x="200" width="85" height="24" rx="4" fill="rgba(194,87,10,0.1)" stroke="rgba(194,87,10,0.3)" stroke-width="1"/>
+    <text x="242.5" y="16" font-family="SF Mono, monospace" font-size="11" font-weight="500" fill="#c2570a" text-anchor="middle">IndexedDB</text>
+    <rect x="295" width="85" height="24" rx="4" fill="rgba(83,148,255,0.1)" stroke="rgba(83,148,255,0.3)" stroke-width="1"/>
+    <text x="337.5" y="16" font-family="SF Mono, monospace" font-size="11" font-weight="500" fill="#5394ff" text-anchor="middle">Capacitor</text>
+  </g>
+  
+  <line x1="0" y1="0" x2="60" y2="0" stroke="#c2570a" stroke-width="2" opacity="0.5"/>
+  <line x1="0" y1="0" x2="0" y2="60" stroke="#c2570a" stroke-width="2" opacity="0.5"/>
+  <line x1="1200" y1="300" x2="1140" y2="300" stroke="#c2570a" stroke-width="2" opacity="0.5"/>
+  <line x1="1200" y1="300" x2="1200" y2="240" stroke="#c2570a" stroke-width="2" opacity="0.5"/>
+</svg>
