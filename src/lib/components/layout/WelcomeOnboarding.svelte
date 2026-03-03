@@ -28,7 +28,8 @@
 
 {#if !prefs.onboardingComplete}
 	<div
-		class="fixed inset-0 z-[60] flex items-center justify-center bg-background"
+		class="fixed inset-0 z-[70] flex items-center justify-center"
+		style="background: var(--background);"
 		transition:fade={{ duration: 300 }}
 	>
 		<div class="mx-auto w-full max-w-sm px-6">

@@ -280,7 +280,7 @@
 	   HERO — Apple Music mesh gradient
 	   ============================================= */
 	.hero-wrap {
-		margin: calc(-3.5rem - env(safe-area-inset-top, 0px)) -1.25rem 0 -1.25rem;
+		margin: calc(-3.5rem - env(safe-area-inset-top, 0px)) -1rem 0 -1rem;
 		overflow: hidden;
 	}
 	@media (min-width: 640px) {
@@ -291,7 +291,7 @@
 
 	.hero-banner {
 		position: relative;
-		min-height: 55vh;
+		min-height: 70vh;
 		display: flex;
 		align-items: flex-end;
 		overflow: hidden;

@@ -159,7 +159,12 @@ const PRESETS: Record<string, GradientPreset> = {
 };
 
 export function getGradientPreset(): GradientPreset {
-	const presetKeys = Object.keys(PRESETS);
-	const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)];
-	return PRESETS[randomKey];
+	const hour = new Date().getHours();
+
+	if (hour >= 5 && hour < 7) return PRESETS.sunrise;
+	if (hour >= 7 && hour < 12) return PRESETS.morning;
+	if (hour >= 12 && hour < 17) return PRESETS.afternoon;
+	if (hour >= 17 && hour < 19) return PRESETS.dusk;
+	if (hour >= 19 && hour < 21) return PRESETS.evening;
+	return PRESETS.night;
 }

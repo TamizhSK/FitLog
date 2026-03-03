@@ -10,10 +10,20 @@
 
 	let { children } = $props();
 	let scrolled = $state(false);
+	let splashVisible = $state(true);
+	let splashFading = $state(false);
 
 	onMount(() => {
 		initTheme();
 		initPreferences();
+
+		// Splash screen: show icon briefly, then fade out
+		setTimeout(() => {
+			splashFading = true;
+			setTimeout(() => {
+				splashVisible = false;
+			}, 500);
+		}, 800);
 
 		function onScroll() {
 			scrolled = window.scrollY > 10;
@@ -53,6 +63,17 @@
 
 <WelcomeOnboarding />
 
+{#if splashVisible}
+	<div class="splash" class:splash-fade={splashFading}>
+		<img
+			src="/icons/icon-192.png"
+			alt="FitLog"
+			class="splash-icon"
+			class:splash-icon-entered={!splashFading}
+		/>
+	</div>
+{/if}
+
 <style>
 	.app-shell {
 		display: flex;
@@ -60,6 +81,7 @@
 		min-height: 100dvh;
 		background: var(--background);
 		color: var(--foreground);
+		overflow-x: hidden;
 	}
 
 	/* Fixed brand bar — always visible, clears the notch/punch-hole */
@@ -74,6 +96,7 @@
 		padding: 0 1.125rem 0.5rem;
 		height: calc(3rem + env(safe-area-inset-top, 0px));
 		pointer-events: none;
+		view-transition-name: brand-strip;
 	}
 
 	.brand-name {
@@ -106,6 +129,36 @@
 	@media (min-width: 640px) {
 		.app-main {
 			padding-top: calc(3.25rem + env(safe-area-inset-top, 0px));
+		}
+	}
+
+	/* Splash screen — native app launch feel */
+	.splash {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--background);
+		transition: opacity 0.5s ease;
+	}
+	.splash-fade {
+		opacity: 0;
+		pointer-events: none;
+	}
+	.splash-icon {
+		width: 80px;
+		height: 80px;
+		border-radius: 1.25rem;
+		opacity: 0;
+		transform: scale(0.8);
+		animation: splash-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+	}
+	@keyframes splash-enter {
+		to {
+			opacity: 1;
+			transform: scale(1);
 		}
 	}
 </style>
