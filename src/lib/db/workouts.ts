@@ -43,7 +43,12 @@ function calculateWorkoutScore(workout: WorkoutLog): number {
 
 	for (const exercise of workout.exercises) {
 		const exData = getExerciseById(exercise.exerciseId);
-		const exType = exData?.exerciseType ?? 'STRENGTH';
+		let exType = exData?.exerciseType ?? 'STRENGTH';
+
+		// Handle HIIT workouts which might not be in the regular exercise DB
+		if (!exData && exercise.exerciseId.startsWith('hiit-')) {
+			exType = 'CARDIO';
+		}
 
 		uniqueExercises.add(exercise.exerciseId);
 		if (exData) {

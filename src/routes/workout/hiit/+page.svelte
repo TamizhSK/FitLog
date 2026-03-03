@@ -11,6 +11,7 @@
 		getHiitRestSeconds,
 		getHiitTotalElapsed,
 		isHiitPaused,
+		getHiitCurrentExercise,
 		startHiit,
 		pauseHiit,
 		resumeHiit,
@@ -18,7 +19,7 @@
 		stopHiit
 	} from '$lib/stores/hiit.svelte';
 	import { formatDuration } from '$lib/stores/workout.svelte';
-	import { Play, Pause, SkipForward, X, ChevronLeft } from '@lucide/svelte';
+	import { Play, Pause, SkipForward, X, ChevronLeft, Dumbbell } from '@lucide/svelte';
 
 	let phase = $derived(getHiitPhase());
 	let remaining = $derived(getHiitPhaseRemaining());
@@ -27,6 +28,7 @@
 	let totalRounds = $derived(getHiitTotalRounds());
 	let elapsed = $derived(getHiitTotalElapsed());
 	let paused = $derived(isHiitPaused());
+	let currentExercise = $derived(getHiitCurrentExercise());
 
 	let displayTime = $derived.by(() => {
 		const s = Math.ceil(remaining);
@@ -106,6 +108,14 @@
 		</div>
 	</div>
 
+	<!-- Current Exercise -->
+	{#if currentExercise && phase !== 'done'}
+		<div class="exercise-badge">
+			<Dumbbell class="h-4 w-4" />
+			<span>{currentExercise.name}</span>
+		</div>
+	{/if}
+
 	<!-- Total elapsed -->
 	<p class="total-elapsed">{formatDuration(elapsed)} total</p>
 
@@ -172,7 +182,7 @@
 		height: 100%;
 	}
 	.ring-progress {
-		transition: stroke-dashoffset 0.3s ease;
+		/* Removed transition for 60fps updates to ensure perfect smoothness */
 	}
 	.timer-display {
 		position: absolute;
@@ -194,6 +204,29 @@
 		font-size: 0.8rem;
 		font-weight: 500;
 		color: var(--muted-foreground);
+	}
+
+	.exercise-badge {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		border-radius: 9999px;
+		background: oklch(0.24 0.006 286);
+		border: 1px solid oklch(1 0 0 / 0.08);
+		color: var(--foreground);
+		font-size: 0.875rem;
+		font-weight: 600;
+		box-shadow: 0 2px 8px oklch(0 0 0 / 0.1);
+		animation: badge-pop 0.3s var(--ease-spring);
+	}
+	:global(:root:not(.dark)) .exercise-badge {
+		background: white;
+		border-color: oklch(0 0 0 / 0.06);
+	}
+	@keyframes badge-pop {
+		from { opacity: 0; transform: scale(0.9); }
+		to { opacity: 1; transform: scale(1); }
 	}
 
 	.total-elapsed {

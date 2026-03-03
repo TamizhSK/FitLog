@@ -95,7 +95,7 @@
 				stroke-dashoffset={dashOffset}
 				opacity="0.35"
 				filter="url(#glow)"
-				style="transition: stroke 0.4s cubic-bezier(0.22, 1, 0.36, 1), stroke-dashoffset 0.3s ease-out"
+				style="transition: stroke 0.4s cubic-bezier(0.22, 1, 0.36, 1)"
 			/>
 			<!-- Active arc -->
 			<circle
@@ -108,7 +108,7 @@
 				stroke-linecap="round"
 				stroke-dasharray={C}
 				stroke-dashoffset={dashOffset}
-				style="transition: stroke 0.4s cubic-bezier(0.22, 1, 0.36, 1), stroke-dashoffset 0.3s ease-out"
+				style="transition: stroke 0.4s cubic-bezier(0.22, 1, 0.36, 1)"
 			/>
 			<defs>
 				<filter id="glow">

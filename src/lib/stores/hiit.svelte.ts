@@ -1,8 +1,16 @@
 import { browser } from '$app/environment';
+import { saveWorkout } from '$lib/db/workouts';
+import { v4 as uuidv4 } from 'uuid';
 
 export type HiitPhase = 'idle' | 'countdown' | 'work' | 'rest' | 'done';
 
+export interface HiitExerciseInfo {
+	id: string;
+	name: string;
+}
+
 let phase = $state<HiitPhase>('idle');
+let exercises = $state<HiitExerciseInfo[]>([]);
 let workSeconds = $state(20);
 let restSeconds = $state(10);
 let totalRounds = $state(8);
@@ -15,6 +23,7 @@ let pausedRemaining = $state(0);
 let tickInterval = $state<ReturnType<typeof setInterval> | null>(null);
 let totalElapsed = $state(0);
 let totalStartedAt = $state<number | null>(null);
+let startTime = $state<string | null>(null);
 
 // --- Getters ---
 
@@ -54,9 +63,25 @@ export function isHiitPaused(): boolean {
 	return pausedAt !== null;
 }
 
+export function getHiitExercises(): HiitExerciseInfo[] {
+	return exercises;
+}
+
+export function getHiitCurrentExercise(): HiitExerciseInfo | null {
+	if (exercises.length === 0) return null;
+	const index = (currentRound - 1) % exercises.length;
+	return exercises[index];
+}
+
 // --- Actions ---
 
-export function configureHiit(work: number, rest: number, rounds: number) {
+export function configureHiit(
+	hiitExercises: HiitExerciseInfo[],
+	work: number,
+	rest: number,
+	rounds: number
+) {
+	exercises = hiitExercises;
 	workSeconds = work;
 	restSeconds = rest;
 	totalRounds = rounds;
@@ -69,6 +94,7 @@ export function startHiit() {
 	phaseRemaining = 3;
 	totalElapsed = 0;
 	totalStartedAt = Date.now();
+	startTime = new Date().toISOString();
 	pausedAt = null;
 	startPhaseTimer();
 }
@@ -107,6 +133,63 @@ export function stopHiit() {
 	totalStartedAt = null;
 }
 
+async function finalizeWorkout() {
+	if (!startTime) return;
+
+	const endTime = new Date().toISOString();
+	const duration = totalElapsed;
+
+	// Map exercises to their sets
+	// If multiple exercises, they alternate in the log
+	const workoutExercises = exercises.map(ex => {
+		const exerciseSets = [];
+		for (let r = 1; r <= totalRounds; r++) {
+			const exIndex = (r - 1) % exercises.length;
+			if (exercises[exIndex].id === ex.id) {
+				exerciseSets.push({
+					setNumber: Math.floor((r - 1) / exercises.length) + 1,
+					reps: 0,
+					duration: workSeconds,
+					completed: r < currentRound || (r === currentRound && phase === 'done'),
+					restTime: restSeconds
+				});
+			}
+		}
+
+		return {
+			exerciseId: ex.id.startsWith('hiit-') ? ex.id : `hiit-${ex.id}`,
+			exerciseName: ex.name.includes('(HIIT)') ? ex.name : `${ex.name} (HIIT)`,
+			sets: exerciseSets
+		};
+	});
+
+	// If no exercises were selected but a template name was used
+	if (workoutExercises.length === 0) {
+		workoutExercises.push({
+			exerciseId: 'hiit-custom',
+			exerciseName: 'Custom Intervals (HIIT)',
+			sets: Array.from({ length: totalRounds }, (_, i) => ({
+				setNumber: i + 1,
+				reps: 0,
+				duration: workSeconds,
+				completed: i + 1 < currentRound || (i + 1 === currentRound && phase === 'done'),
+				restTime: restSeconds
+			}))
+		});
+	}
+
+	const workout = {
+		id: uuidv4(),
+		date: new Date().toISOString().split('T')[0],
+		startTime,
+		endTime,
+		duration,
+		exercises: workoutExercises
+	};
+
+	await saveWorkout(workout);
+}
+
 // --- Internal ---
 
 function startPhaseTimer() {
@@ -116,7 +199,8 @@ function startPhaseTimer() {
 
 function startTick() {
 	stopTick();
-	tickInterval = setInterval(tick, 250);
+	// Run at ~60fps for smooth UI updates
+	tickInterval = setInterval(tick, 16);
 	if (browser) {
 		document.addEventListener('visibilitychange', handleVisibility);
 	}
@@ -186,6 +270,7 @@ function advancePhase() {
 			// Done
 			phase = 'done';
 			phaseRemaining = 0;
+			finalizeWorkout();
 		}
 		return;
 	}
@@ -200,7 +285,9 @@ function advancePhase() {
 		} else {
 			phase = 'done';
 			phaseRemaining = 0;
+			finalizeWorkout();
 		}
 		return;
 	}
 }
+

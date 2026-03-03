@@ -107,6 +107,17 @@
 		goto('/workout/active');
 	}
 
+	function startHiitWithSelected() {
+		if (selected.length === 0) return;
+		configureHiit(
+			selected.map(e => ({ id: e.exerciseId, name: e.name })),
+			hiitWork,
+			hiitRest,
+			hiitRounds
+		);
+		goto('/workout/hiit');
+	}
+
 	function useTemplate(template: WorkoutTemplate) {
 		const exercises = getFilteredExercises();
 		const count = template.exerciseCount ?? 6;
@@ -170,7 +181,19 @@
 	}
 
 	function startHiitTimer() {
-		configureHiit(hiitWork, hiitRest, hiitRounds);
+		if (!expandedHiit) return;
+
+		// Use selected exercises if any, otherwise use the template name as a placeholder
+		const hiitEx = selected.length > 0
+			? selected.map(e => ({ id: e.exerciseId, name: e.name }))
+			: [{ id: expandedHiit.id ?? 'custom', name: expandedHiit.name }];
+
+		configureHiit(
+			hiitEx,
+			hiitWork,
+			hiitRest,
+			hiitRounds
+		);
 		goto('/workout/hiit');
 	}
 
@@ -361,12 +384,18 @@
 
 	<!-- Start button -->
 	{#if selected.length > 0}
-		<div class="h-20"></div>
-		<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 md:bottom-4">
-			<button onclick={startWithSelected} class="cta-btn">
-				<Play class="h-5 w-5" fill="currentColor" />
-				Start Workout ({selected.length} exercise{selected.length > 1 ? 's' : ''})
-			</button>
+		<div class="h-24"></div>
+		<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 flex flex-col gap-2 md:bottom-4">
+			<div class="flex gap-2">
+				<button onclick={startWithSelected} class="cta-btn flex-1">
+					<Play class="h-5 w-5" fill="currentColor" />
+					Start Workout ({selected.length})
+				</button>
+				<button onclick={startHiitWithSelected} class="cta-btn-secondary flex-1">
+					<Timer class="h-5 w-5" />
+					HIIT ({selected.length})
+				</button>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -502,6 +531,31 @@
 	}
 	.hiit-start-btn:active {
 		transform: scale(0.97);
+	}
+
+	.cta-btn-secondary {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 0.9rem 1.5rem;
+		border-radius: 1rem;
+		background: oklch(0.24 0.006 286);
+		border: 1px solid oklch(1 0 0 / 0.1);
+		color: var(--foreground);
+		font-weight: 600;
+		font-size: 0.95rem;
+		transition: transform 0.15s var(--ease-spring), background 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
+	}
+	:global(:root:not(.dark)) .cta-btn-secondary {
+		background: white;
+		border-color: oklch(0 0 0 / 0.1);
+		box-shadow: 0 2px 8px oklch(0 0 0 / 0.05);
+	}
+	.cta-btn-secondary:active {
+		transform: scale(0.98);
 	}
 
 	.search-result-row {

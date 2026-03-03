@@ -35,6 +35,7 @@
 	function startTimer() {
 		if (!exercise) return;
 		configureHiit(
+			[{ id: exercise.id, name: exercise.name }],
 			exercise.defaultConfig.workSeconds,
 			exercise.defaultConfig.restSeconds,
 			exercise.defaultConfig.rounds

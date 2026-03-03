@@ -206,7 +206,8 @@ export function restoreWorkout() {
 function startTimer() {
 	stopTimer();
 	recalcElapsed();
-	timerInterval = setInterval(recalcElapsed, 1000);
+	// Run at ~60fps for smooth UI updates
+	timerInterval = setInterval(recalcElapsed, 16);
 
 	if (browser) {
 		document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -215,7 +216,7 @@ function startTimer() {
 
 function recalcElapsed() {
 	if (startTime) {
-		elapsedSeconds = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
+		elapsedSeconds = (Date.now() - new Date(startTime).getTime()) / 1000;
 	}
 }
 
@@ -274,14 +275,14 @@ export function startRest(seconds: number) {
 	restCompletedNaturally = false;
 	restInterval = setInterval(() => {
 		if (restStartedAt) {
-			const elapsed = Math.floor((Date.now() - restStartedAt) / 1000);
+			const elapsed = (Date.now() - restStartedAt) / 1000;
 			restRemaining = Math.max(0, restTotal - elapsed);
 			if (restRemaining <= 0) {
 				restCompletedNaturally = true;
 				stopRest();
 			}
 		}
-	}, 250);
+	}, 16);
 }
 
 export function adjustRest(delta: number) {
@@ -291,7 +292,7 @@ export function adjustRest(delta: number) {
 	if (restStartedAt) {
 		restStartedAt += delta * 1000;
 	}
-	const elapsed = restStartedAt ? Math.floor((Date.now() - restStartedAt) / 1000) : 0;
+	const elapsed = restStartedAt ? (Date.now() - restStartedAt) / 1000 : 0;
 	restRemaining = Math.max(0, restTotal - elapsed);
 }
 
@@ -331,9 +332,10 @@ export function clearRestCompletedFlag() {
 }
 
 export function formatDuration(seconds: number): string {
-	const h = Math.floor(seconds / 3600);
-	const m = Math.floor((seconds % 3600) / 60);
-	const s = seconds % 60;
+	const totalSeconds = Math.floor(seconds);
+	const h = Math.floor(totalSeconds / 3600);
+	const m = Math.floor((totalSeconds % 3600) / 60);
+	const s = totalSeconds % 60;
 	if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 	return `${m}:${String(s).padStart(2, '0')}`;
 }
