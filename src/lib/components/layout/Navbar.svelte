@@ -1,8 +1,32 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import ThemeToggle from './ThemeToggle.svelte';
+
+	let hidden = $state(false);
+	let scrolled = $state(false);
+	let lastScrollY = 0;
+
+	function handleScroll() {
+		const y = window.scrollY;
+
+		scrolled = y > 10;
+
+		if (y > lastScrollY && y > 48) {
+			hidden = true;
+		} else if (y < lastScrollY) {
+			hidden = false;
+		}
+
+		lastScrollY = y;
+	}
+
+	onMount(() => {
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	});
 </script>
 
-<header class="navbar safe-top">
+<header class="navbar safe-top" class:navbar-hidden={hidden} class:navbar-scrolled={scrolled}>
 	<div class="navbar-inner">
 		<a href="/" class="navbar-logo">
 			<span>FitLog</span>
@@ -21,11 +45,33 @@
 
 <style>
 	.navbar {
-		position: sticky;
+		position: fixed;
 		top: 0;
+		left: 0;
+		right: 0;
 		z-index: 50;
-		width: 100%;
 		background: transparent;
+		border-bottom: 1px solid transparent;
+		transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+		            background 0.25s ease,
+		            border-color 0.25s ease;
+		will-change: transform;
+	}
+
+	/* Only show backdrop when user has scrolled */
+	.navbar-scrolled {
+		background: oklch(0.14 0.005 286 / 0.6);
+		backdrop-filter: blur(16px) saturate(180%);
+		-webkit-backdrop-filter: blur(16px) saturate(180%);
+		border-bottom-color: oklch(1 0 0 / 0.08);
+	}
+	:global(:root:not(.dark)) .navbar-scrolled {
+		background: oklch(1 0 0 / 0.5);
+		border-bottom-color: oklch(0 0 0 / 0.08);
+	}
+
+	.navbar-hidden {
+		transform: translateY(-100%);
 	}
 
 	.navbar-inner {

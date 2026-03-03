@@ -8,7 +8,28 @@
 	} from '$lib/stores/exercises.svelte';
 	import ExerciseCard from '$lib/components/exercises/ExerciseCard.svelte';
 	import ExerciseFilter from '$lib/components/exercises/ExerciseFilter.svelte';
-	import { Loader2 } from '@lucide/svelte';
+	import { HIIT_EXERCISES } from '$lib/data/hiit-exercises';
+	import type { Component } from 'svelte';
+	import {
+		Loader2,
+		Timer,
+		ChevronRight,
+		Flame,
+		Clock,
+		BicepsFlexed,
+		Zap,
+		Dumbbell,
+		SlidersHorizontal
+	} from '@lucide/svelte';
+
+	const HIIT_ICONS: Record<string, Component> = {
+		flame: Flame,
+		clock: Clock,
+		'biceps-flexed': BicepsFlexed,
+		zap: Zap,
+		dumbbell: Dumbbell,
+		'sliders-horizontal': SlidersHorizontal,
+	};
 
 	const PAGE_SIZE = 24;
 	let page = $state(1);
@@ -46,6 +67,31 @@
 		</p>
 	</div>
 
+	<!-- HIIT Workouts Section -->
+	<div>
+		<div class="fl-section-header">
+			<div class="fl-section-icon">
+				<Timer class="h-4 w-4 text-emerald-400" />
+			</div>
+			<h2 class="fl-section-label">HIIT Workouts</h2>
+		</div>
+		<div class="scrollbar-hide -mx-4 flex gap-2 overflow-x-auto px-4 pb-2">
+			{#each HIIT_EXERCISES as hiit (hiit.id)}
+				<a href="/exercises/hiit/{hiit.id}" class="hiit-card shrink-0">
+					<div class="hiit-card-icon">
+						{#if HIIT_ICONS[hiit.icon]}
+							{@const Icon = HIIT_ICONS[hiit.icon]}
+							<Icon class="h-5 w-5" />
+						{/if}
+					</div>
+					<span class="text-sm font-semibold">{hiit.name}</span>
+					<span class="text-[0.65rem] text-muted-foreground">{hiit.difficulty}</span>
+					<ChevronRight class="absolute right-2 top-2 h-3.5 w-3.5 text-muted-foreground/30" />
+				</a>
+			{/each}
+		</div>
+	</div>
+
 	<ExerciseFilter />
 
 	{#if loading}
@@ -78,6 +124,55 @@
 </div>
 
 <style>
+	.hiit-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.375rem;
+		width: 130px;
+		padding: 0.875rem 0.75rem;
+		border-radius: 1rem;
+		text-align: left;
+		text-decoration: none;
+		color: inherit;
+		background: oklch(0.19 0.006 286);
+		border: 1px solid oklch(1 0 0 / 0.08);
+		transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s var(--ease-spring);
+		-webkit-tap-highlight-color: transparent;
+	}
+	.hiit-card:hover {
+		border-color: oklch(0.55 0.14 155 / 0.3);
+		background: oklch(0.22 0.006 286);
+	}
+	.hiit-card:active {
+		transform: scale(0.97);
+	}
+	:global(:root:not(.dark)) .hiit-card {
+		background: white;
+		border-color: oklch(0 0 0 / 0.06);
+		box-shadow: 0 1px 3px oklch(0 0 0 / 0.04);
+	}
+	:global(:root:not(.dark)) .hiit-card:hover {
+		border-color: oklch(0.45 0.14 155 / 0.25);
+		background: oklch(0.97 0 0);
+	}
+
+	.hiit-card-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+		background: oklch(0.55 0.14 155 / 0.15);
+		color: oklch(0.72 0.14 155);
+		margin-bottom: 0.25rem;
+	}
+	:global(:root:not(.dark)) .hiit-card-icon {
+		background: oklch(0.45 0.14 155 / 0.1);
+		color: oklch(0.40 0.14 155);
+	}
+
 	.load-more-btn {
 		padding: 0.625rem 1.5rem;
 		border-radius: 0.75rem;

@@ -196,8 +196,9 @@
 			</div>
 		{/if}
 
+		<div class="h-20"></div>
 		<!-- Add to Workout CTA -->
-		<div class="sticky bottom-[76px] z-10 flex justify-center md:bottom-4">
+		<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 flex justify-center md:bottom-4">
 			<a href="/workout" class="cta-btn">
 				<Plus class="h-4 w-4" />
 				Add to Workout

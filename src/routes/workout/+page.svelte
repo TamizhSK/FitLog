@@ -14,8 +14,11 @@
 		startWorkout,
 		restoreWorkout
 	} from '$lib/stores/workout.svelte';
+	import { configureHiit } from '$lib/stores/hiit.svelte';
 	import type { Exercise } from '$lib/types/exercise';
+	import { WORKOUT_TEMPLATES, TEMPLATE_CATEGORIES, type WorkoutTemplate } from '$lib/data/templates';
 	import MuscleTag from '$lib/components/exercises/MuscleTag.svelte';
+	import type { Component } from 'svelte';
 	import {
 		Play,
 		Zap,
@@ -25,20 +28,53 @@
 		Check,
 		Dumbbell,
 		Trash2,
-		ChevronRight
+		ChevronRight,
+		Timer,
+		Flame,
+		ArrowUpFromLine,
+		Footprints,
+		MoveDown,
+		Target,
+		BicepsFlexed,
+		Mountain,
+		Link,
+		Shield,
+		PersonStanding,
+		Sprout,
+		Clock,
+		SlidersHorizontal,
+		Minus
 	} from '@lucide/svelte';
+
+	const ICONS: Record<string, Component> = {
+		dumbbell: Dumbbell,
+		flame: Flame,
+		zap: Zap,
+		'arrow-up-from-line': ArrowUpFromLine,
+		footprints: Footprints,
+		'move-down': MoveDown,
+		target: Target,
+		'biceps-flexed': BicepsFlexed,
+		mountain: Mountain,
+		link: Link,
+		shield: Shield,
+		'person-standing': PersonStanding,
+		timer: Timer,
+		sprout: Sprout,
+		clock: Clock,
+		'sliders-horizontal': SlidersHorizontal,
+	};
 
 	let selected = $state<Exercise[]>([]);
 	let showSearch = $state(false);
 	let query = $derived(getSearchQuery());
 	let results = $derived(getFilteredExercises().slice(0, 20));
 
-	const quickTemplates = [
-		{ name: 'Push Day', emoji: '💪', bodyParts: ['CHEST', 'SHOULDERS', 'TRICEPS'] },
-		{ name: 'Pull Day', emoji: '🏋️', bodyParts: ['BACK', 'BICEPS', 'FOREARMS'] },
-		{ name: 'Leg Day', emoji: '🦵', bodyParts: ['QUADRICEPS', 'THIGHS', 'HAMSTRINGS', 'CALVES', 'HIPS'] },
-		{ name: 'Full Body', emoji: '⚡', bodyParts: ['CHEST', 'BACK', 'SHOULDERS', 'QUADRICEPS'] }
-	];
+	// HIIT inline config
+	let expandedHiit = $state<WorkoutTemplate | null>(null);
+	let hiitWork = $state(30);
+	let hiitRest = $state(15);
+	let hiitRounds = $state(8);
 
 	onMount(() => {
 		loadExercises();
@@ -71,22 +107,86 @@
 		goto('/workout/active');
 	}
 
-	function useTemplate(template: { name: string; bodyParts: string[] }) {
+	function useTemplate(template: WorkoutTemplate) {
 		const exercises = getFilteredExercises();
-		const matching = exercises.filter((e) =>
-			e.bodyParts.some((bp) => template.bodyParts.includes(bp))
-		);
-		// Pick up to 6 varied exercises
-		const picked: Exercise[] = [];
-		for (const bp of template.bodyParts) {
-			const forBp = matching.filter(
-				(e) => e.bodyParts.includes(bp) && !picked.some((p) => p.exerciseId === e.exerciseId)
+		const count = template.exerciseCount ?? 6;
+		let matching: Exercise[];
+
+		if (template.equipments) {
+			matching = exercises.filter((e) =>
+				e.equipments.some((eq) => template.equipments!.includes(eq))
 			);
-			if (forBp.length > 0) picked.push(forBp[0]);
-			if (forBp.length > 1) picked.push(forBp[1]);
+		} else if (template.bodyParts) {
+			matching = exercises.filter((e) =>
+				e.bodyParts.some((bp) => template.bodyParts!.includes(bp))
+			);
+		} else {
+			matching = exercises;
 		}
-		selected = picked.slice(0, 6);
+
+		const picked: Exercise[] = [];
+		if (template.bodyParts) {
+			for (const bp of template.bodyParts) {
+				const forBp = matching.filter(
+					(e) => e.bodyParts.includes(bp) && !picked.some((p) => p.exerciseId === e.exerciseId)
+				);
+				if (forBp.length > 0) picked.push(forBp[0]);
+				if (forBp.length > 1 && picked.length < count) picked.push(forBp[1]);
+			}
+		} else {
+			// Equipment-based: just grab varied exercises
+			for (const e of matching) {
+				if (picked.length >= count) break;
+				if (!picked.some((p) => p.bodyParts[0] === e.bodyParts[0])) {
+					picked.push(e);
+				}
+			}
+			// Fill remaining
+			for (const e of matching) {
+				if (picked.length >= count) break;
+				if (!picked.some((p) => p.exerciseId === e.exerciseId)) {
+					picked.push(e);
+				}
+			}
+		}
+		selected = picked.slice(0, count);
 	}
+
+	function handleTemplateClick(template: WorkoutTemplate) {
+		if (template.category === 'hiit') {
+			if (expandedHiit === template) {
+				expandedHiit = null;
+			} else {
+				expandedHiit = template;
+				if (template.hiitConfig) {
+					hiitWork = template.hiitConfig.workSeconds;
+					hiitRest = template.hiitConfig.restSeconds;
+					hiitRounds = template.hiitConfig.rounds;
+				}
+			}
+		} else {
+			useTemplate(template);
+		}
+	}
+
+	function startHiitTimer() {
+		configureHiit(hiitWork, hiitRest, hiitRounds);
+		goto('/workout/hiit');
+	}
+
+	function adjustHiit(field: 'work' | 'rest' | 'rounds', delta: number) {
+		if (field === 'work') hiitWork = Math.max(5, hiitWork + delta);
+		if (field === 'rest') hiitRest = Math.max(0, hiitRest + delta);
+		if (field === 'rounds') hiitRounds = Math.max(1, hiitRounds + delta);
+	}
+
+	let hiitTotalTime = $derived.by(() => {
+		if (!expandedHiit) return '';
+		const t = hiitWork * hiitRounds + hiitRest * Math.max(0, hiitRounds - 1);
+		const m = Math.floor(t / 60);
+		const s = t % 60;
+		return `${m}:${String(s).padStart(2, '0')}`;
+	});
 </script>
 
 <div class="fl-page-enter space-y-6">
@@ -113,21 +213,67 @@
 			</div>
 			<h2 class="fl-section-label">Quick Templates</h2>
 		</div>
-		<div class="grid grid-cols-2 gap-2">
-			{#each quickTemplates as template}
-				<button
-					onclick={() => useTemplate(template)}
-					class="template-card"
-				>
-					<span class="text-sm font-medium">{template.name}</span>
-					<div class="mt-1.5 flex flex-wrap gap-1">
-						{#each template.bodyParts.slice(0, 3) as bp}
-							<MuscleTag muscle={bp} />
-						{/each}
+		{#each TEMPLATE_CATEGORIES as cat}
+			<p class="mb-1.5 mt-3 text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground/60 first:mt-0">{cat.label}</p>
+			<div class="scrollbar-hide -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+				{#each WORKOUT_TEMPLATES.filter(t => t.category === cat.key) as template}
+					<button
+						onclick={() => handleTemplateClick(template)}
+						class="template-card shrink-0"
+						class:template-active={expandedHiit === template}
+					>
+						{#if ICONS[template.icon]}
+							{@const Icon = ICONS[template.icon]}
+							<Icon class="h-4 w-4 text-muted-foreground" />
+						{/if}
+						<span class="text-sm font-medium">{template.name}</span>
+						<span class="text-[0.65rem] text-muted-foreground">{template.description}</span>
+					</button>
+				{/each}
+			</div>
+
+			<!-- Inline HIIT config panel -->
+			{#if cat.key === 'hiit' && expandedHiit}
+				<div class="hiit-config mt-2">
+					{#if expandedHiit.name === 'Custom'}
+						<div class="space-y-2.5">
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium">Work</span>
+								<div class="flex items-center gap-2">
+									<button onclick={() => adjustHiit('work', -5)} class="adj-btn"><Minus class="h-3 w-3" /></button>
+									<span class="w-12 text-center text-sm font-bold tabular-nums">{hiitWork}s</span>
+									<button onclick={() => adjustHiit('work', 5)} class="adj-btn"><Plus class="h-3 w-3" /></button>
+								</div>
+							</div>
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium">Rest</span>
+								<div class="flex items-center gap-2">
+									<button onclick={() => adjustHiit('rest', -5)} class="adj-btn"><Minus class="h-3 w-3" /></button>
+									<span class="w-12 text-center text-sm font-bold tabular-nums">{hiitRest}s</span>
+									<button onclick={() => adjustHiit('rest', 5)} class="adj-btn"><Plus class="h-3 w-3" /></button>
+								</div>
+							</div>
+							<div class="flex items-center justify-between">
+								<span class="text-sm font-medium">Rounds</span>
+								<div class="flex items-center gap-2">
+									<button onclick={() => adjustHiit('rounds', -1)} class="adj-btn"><Minus class="h-3 w-3" /></button>
+									<span class="w-12 text-center text-sm font-bold tabular-nums">{hiitRounds}</span>
+									<button onclick={() => adjustHiit('rounds', 1)} class="adj-btn"><Plus class="h-3 w-3" /></button>
+								</div>
+							</div>
+						</div>
+					{/if}
+					<div class="flex items-center justify-between rounded-xl bg-muted/40 px-4 py-2.5">
+						<span class="text-sm text-muted-foreground">{hiitWork}s work / {hiitRest}s rest / {hiitRounds} rounds</span>
+						<span class="text-sm font-bold tabular-nums">{hiitTotalTime}</span>
 					</div>
-				</button>
-			{/each}
-		</div>
+					<button onclick={startHiitTimer} class="hiit-start-btn">
+						<Play class="h-4 w-4" fill="currentColor" />
+						Start Timer
+					</button>
+				</div>
+			{/if}
+		{/each}
 	</div>
 
 	<!-- Exercise Picker -->
@@ -215,7 +361,8 @@
 
 	<!-- Start button -->
 	{#if selected.length > 0}
-		<div class="sticky bottom-20 z-10 md:bottom-4">
+		<div class="h-20"></div>
+		<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 md:bottom-4">
 			<button onclick={startWithSelected} class="cta-btn">
 				<Play class="h-5 w-5" fill="currentColor" />
 				Start Workout ({selected.length} exercise{selected.length > 1 ? 's' : ''})
@@ -257,7 +404,11 @@
 	}
 
 	.template-card {
-		padding: 0.875rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		width: 140px;
+		padding: 0.75rem;
 		border-radius: 1rem;
 		text-align: left;
 		background: oklch(0.19 0.006 286);
@@ -272,6 +423,10 @@
 	.template-card:active {
 		transform: scale(0.97);
 	}
+	.template-active {
+		border-color: oklch(0.6 0.18 155 / 0.5);
+		background: oklch(0.6 0.18 155 / 0.1);
+	}
 	:global(:root:not(.dark)) .template-card {
 		background: white;
 		border-color: oklch(0 0 0 / 0.06);
@@ -280,6 +435,73 @@
 	:global(:root:not(.dark)) .template-card:hover {
 		border-color: oklch(0.5 0.12 280 / 0.2);
 		background: oklch(0.97 0 0);
+	}
+	:global(:root:not(.dark)) .template-active {
+		border-color: oklch(0.45 0.18 155 / 0.5);
+		background: oklch(0.45 0.18 155 / 0.08);
+	}
+
+	/* HIIT inline config panel */
+	.hiit-config {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1rem;
+		border-radius: 1rem;
+		background: oklch(0.19 0.006 286);
+		border: 1px solid oklch(1 0 0 / 0.08);
+		animation: hiit-expand 0.25s var(--ease-spring);
+	}
+	:global(:root:not(.dark)) .hiit-config {
+		background: white;
+		border-color: oklch(0 0 0 / 0.06);
+		box-shadow: 0 1px 4px oklch(0 0 0 / 0.05);
+	}
+	@keyframes hiit-expand {
+		from { opacity: 0; transform: translateY(-8px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	.adj-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+		background: oklch(0.22 0.006 286);
+		border: 1px solid oklch(1 0 0 / 0.08);
+		color: var(--foreground);
+		transition: transform 0.1s ease;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.adj-btn:active {
+		transform: scale(0.92);
+	}
+	:global(:root:not(.dark)) .adj-btn {
+		background: oklch(0.96 0 0);
+		border-color: oklch(0 0 0 / 0.08);
+	}
+
+	.hiit-start-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 0.75rem 1.25rem;
+		border-radius: 0.875rem;
+		background: linear-gradient(135deg, oklch(0.55 0.18 155), oklch(0.45 0.2 140));
+		color: white;
+		font-weight: 600;
+		font-size: 0.9rem;
+		box-shadow: 0 2px 12px oklch(0.5 0.18 150 / 0.25),
+		            inset 0 1px 0 oklch(1 0 0 / 0.12);
+		transition: transform 0.15s var(--ease-spring);
+		-webkit-tap-highlight-color: transparent;
+	}
+	.hiit-start-btn:active {
+		transform: scale(0.97);
 	}
 
 	.search-result-row {

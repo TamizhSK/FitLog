@@ -461,7 +461,8 @@
 
 		<!-- Start Session button -->
 		{#if exercises.length > 0}
-			<div class="sticky bottom-20 z-10 md:bottom-4">
+			<div class="h-20"></div>
+			<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 md:bottom-4">
 				<Button
 					onclick={handleStartSession}
 					size="lg"

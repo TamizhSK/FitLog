@@ -48,6 +48,14 @@
 			{ text: 'If something stands between you and your success, move it.', author: 'Dwayne Johnson' },
 			{ text: 'Success isn\'t always about greatness. It\'s about consistency.', author: 'Dwayne Johnson' },
 			{ text: 'The resistance that you fight physically in the gym strengthens you.', author: 'Arnold Schwarzenegger' },
+			{ text: 'Today I will do what others won\'t, so tomorrow I can do what others can\'t.', author: 'Jerry Rice' },
+			{ text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
+			{ text: 'You don\'t have to be great to start, but you have to start to be great.', author: 'Zig Ziglar' },
+			{ text: 'Every morning brings new potential, but if you dwell on the misfortunes of the day before, you tend to overlook tremendous opportunities.', author: 'Harvey Mackay' },
+			{ text: 'Discipline is the bridge between goals and accomplishment.', author: 'Jim Rohn' },
+			{ text: 'The early morning has gold in its mouth.', author: 'Benjamin Franklin' },
+			{ text: 'It\'s not about having time. It\'s about making time.', author: 'Serena Williams' },
+			{ text: 'I run because if I didn\'t, I\'d be sluggish and I\'d feel bad about myself.', author: 'Michelle Obama' },
 		],
 		afternoon: [
 			{ text: 'Strength does not come from the body. It comes from the will.', author: 'Mahatma Gandhi' },
@@ -56,6 +64,14 @@
 			{ text: 'The clock is ticking. Are you becoming the person you want to be?', author: 'Greg Plitt' },
 			{ text: 'What hurts today makes you stronger tomorrow.', author: 'Jay Cutler' },
 			{ text: 'Your body can stand almost anything. It\'s your mind you have to convince.', author: 'David Goggins' },
+			{ text: 'Obsessed is a word the lazy use to describe the dedicated.', author: 'Grant Cardone' },
+			{ text: 'You miss 100% of the shots you don\'t take.', author: 'Wayne Gretzky' },
+			{ text: 'I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times.', author: 'Bruce Lee' },
+			{ text: 'To keep the body in good health is a duty, otherwise we shall not be able to keep the mind strong and clear.', author: 'Buddha' },
+			{ text: 'All progress takes place outside the comfort zone.', author: 'Michael John Bobak' },
+			{ text: 'When you hit failure, your workout has just begun.', author: 'Ronnie Coleman' },
+			{ text: 'Iron is the great reference point. Two hundred pounds is always two hundred pounds.', author: 'Henry Rollins' },
+			{ text: 'A champion is someone who gets up when they can\'t.', author: 'Jack Dempsey' },
 		],
 		evening: [
 			{ text: 'I hated every minute of training, but I said don\'t quit.', author: 'Muhammad Ali' },
@@ -64,6 +80,14 @@
 			{ text: 'The body achieves what the mind believes.', author: 'Napoleon Hill' },
 			{ text: 'Once you learn to quit, it becomes a habit.', author: 'Vince Lombardi' },
 			{ text: 'Don\'t count the days. Make the days count.', author: 'Muhammad Ali' },
+			{ text: 'The only person you are destined to become is the person you decide to be.', author: 'Ralph Waldo Emerson' },
+			{ text: 'Champions aren\'t made in gyms. Champions are made from something deep inside them — a desire, a dream, a vision.', author: 'Muhammad Ali' },
+			{ text: 'Push harder than yesterday if you want a different tomorrow.', author: 'Vincent Williams Sr.' },
+			{ text: 'Blood, sweat, and respect. First two you give. Last one you earn.', author: 'Dwayne Johnson' },
+			{ text: 'The real workout starts when you want to stop.', author: 'Ronnie Coleman' },
+			{ text: 'Motivation is what gets you started. Habit is what keeps you going.', author: 'Jim Ryun' },
+			{ text: 'Suffer the pain of discipline or suffer the pain of regret.', author: 'Jim Rohn' },
+			{ text: 'If you think lifting is dangerous, try being weak. Being weak is dangerous.', author: 'Bret Contreras' },
 		],
 		night: [
 			{ text: 'The fight is won or lost far away from witnesses.', author: 'Muhammad Ali' },
@@ -72,6 +96,14 @@
 			{ text: 'Take care of your body. It\'s the only place you have to live.', author: 'Jim Rohn' },
 			{ text: 'Recovery is just as important as the workout itself.', author: 'Ronnie Coleman' },
 			{ text: 'The successful warrior is the average man with laser-like focus.', author: 'Bruce Lee' },
+			{ text: 'Rome wasn\'t built in a day, but they worked on it every single day.', author: 'John Heywood' },
+			{ text: 'Your love for what you do and willingness to push yourself where others aren\'t prepared to go is what will make you great.', author: 'Laurence Shahlaei' },
+			{ text: 'The groundwork for all happiness is good health.', author: 'Leigh Hunt' },
+			{ text: 'Fitness is not about being better than someone else. It\'s about being better than you used to be.', author: 'Khloe Kardashian' },
+			{ text: 'The last rep is where the magic happens.', author: 'Kai Greene' },
+			{ text: 'Respect your body. It\'s the only one you get.', author: 'Astrid Alauda' },
+			{ text: 'Training gives us an outlet for suppressed energies created by stress and thus tones the spirit just as exercise conditions the body.', author: 'Arnold Schwarzenegger' },
+			{ text: 'Good things come to those who sweat.', author: 'Unknown' },
 		],
 	};
 
@@ -83,7 +115,7 @@
 		else if (hour >= 17 && hour < 21) period = 'evening';
 		else period = 'night';
 		const pool = quotesByTime[period];
-		return pool[new Date().getDay() % pool.length];
+		return pool[Math.floor(Math.random() * pool.length)];
 	})();
 
 	function reveal(node: HTMLElement) {
@@ -117,12 +149,21 @@
 <div class="hero-wrap">
 	<div
 		class="hero-banner"
-		style="--hero-base:{gradient.base};--hero-base-light:{gradient.baseLight};--orb1:{gradient.orb1};--orb2:{gradient.orb2};--orb3:{gradient.orb3};--orb1-light:{gradient.orb1Light};--orb2-light:{gradient.orb2Light};--orb3-light:{gradient.orb3Light}"
+		style="--base:{gradient.base};--base-l:{gradient.baseLight};--c1:{gradient.c1};--c2:{gradient.c2};--c3:{gradient.c3};--c4:{gradient.c4};--c1l:{gradient.c1Light};--c2l:{gradient.c2Light};--c3l:{gradient.c3Light};--c4l:{gradient.c4Light}"
 	>
-		<!-- Animated gradient orbs -->
-		<div class="hero-orb hero-orb-1"></div>
-		<div class="hero-orb hero-orb-2"></div>
-		<div class="hero-orb hero-orb-3"></div>
+		<!-- Mesh Gradient Background -->
+		<div class="hero-mesh">
+			<div class="mesh-ball ball-1"></div>
+			<div class="mesh-ball ball-2"></div>
+			<div class="mesh-ball ball-3"></div>
+			<div class="mesh-ball ball-4"></div>
+		</div>
+
+		<!-- Animated shimmer layer -->
+		<div class="hero-shimmer"></div>
+
+		<!-- Bottom scrim for text readability -->
+		<div class="hero-scrim"></div>
 
 		<!-- Noise texture -->
 		<div class="hero-grain"></div>
@@ -236,89 +277,147 @@
 
 <style>
 	/* =============================================
-	   HERO — Vibrant gradient with animated orbs
+	   HERO — Apple Music mesh gradient
 	   ============================================= */
 	.hero-wrap {
-		margin: calc(-1rem - 3rem) -1rem 0 -1rem;
+		margin: calc(-3.5rem - env(safe-area-inset-top, 0px)) -1.25rem 0 -1.25rem;
+		overflow: hidden;
+	}
+	@media (min-width: 640px) {
+		.hero-wrap {
+			margin-top: calc(-3.75rem - env(safe-area-inset-top, 0px));
+		}
 	}
 
 	.hero-banner {
 		position: relative;
-		min-height: 380px;
+		min-height: 55vh;
 		display: flex;
 		align-items: flex-end;
 		overflow: hidden;
-		border-radius: 0 0 1.5rem 1.5rem;
-		background: var(--hero-base, oklch(0.13 0.01 30));
+		background: var(--base);
+		-webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+		mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
 	}
 	:global(:root:not(.dark)) .hero-banner {
-		background: var(--hero-base-light, oklch(0.97 0.005 30));
+		background: var(--base-l);
 	}
 
-	/* Animated gradient orbs — Apple Fitness+ style */
-	.hero-orb {
+	/* Advanced Mesh Gradient */
+	.hero-mesh {
+		position: absolute;
+		inset: 0;
+		filter: blur(80px);
+		opacity: 1;
+		z-index: 0;
+		transform: scale(1.2);
+	}
+	.mesh-ball {
 		position: absolute;
 		border-radius: 50%;
-		filter: blur(60px);
-		will-change: transform;
-		animation: orb-drift 8s ease-in-out infinite alternate;
+		opacity: 0.8;
 	}
-	.hero-orb-1 {
-		width: 280px;
-		height: 280px;
-		top: -60px;
-		left: -40px;
-		background: var(--orb1);
-		animation-duration: 7s;
+	.ball-1 {
+		width: 120%;
+		height: 120%;
+		top: -30%;
+		left: -30%;
+		background: var(--c1);
+		animation: mesh-move-1 25s infinite alternate;
 	}
-	.hero-orb-2 {
-		width: 220px;
-		height: 220px;
-		top: -20px;
-		right: -30px;
-		background: var(--orb2);
-		animation-duration: 9s;
-		animation-delay: -3s;
+	.ball-2 {
+		width: 110%;
+		height: 110%;
+		bottom: -20%;
+		right: -20%;
+		background: var(--c2);
+		animation: mesh-move-2 20s infinite alternate-reverse;
 	}
-	.hero-orb-3 {
-		width: 180px;
-		height: 180px;
-		bottom: 20px;
-		left: 30%;
-		background: var(--orb3);
-		animation-duration: 11s;
-		animation-delay: -5s;
+	.ball-3 {
+		width: 100%;
+		height: 100%;
+		top: 20%;
+		right: -30%;
+		background: var(--c3);
+		animation: mesh-move-1 18s infinite alternate-reverse;
 	}
-	:global(:root:not(.dark)) .hero-orb-1 { background: var(--orb1-light); }
-	:global(:root:not(.dark)) .hero-orb-2 { background: var(--orb2-light); }
-	:global(:root:not(.dark)) .hero-orb-3 { background: var(--orb3-light); }
+	.ball-4 {
+		width: 90%;
+		height: 90%;
+		bottom: 30%;
+		left: 20%;
+		background: var(--c4);
+		animation: mesh-move-2 22s infinite alternate;
+	}
 
-	@keyframes orb-drift {
+	:global(:root:not(.dark)) .ball-1 { background: var(--c1l); opacity: 0.9; }
+	:global(:root:not(.dark)) .ball-2 { background: var(--c2l); opacity: 0.9; }
+	:global(:root:not(.dark)) .ball-3 { background: var(--c3l); opacity: 0.9; }
+	:global(:root:not(.dark)) .ball-4 { background: var(--c4l); opacity: 0.9; }
+
+	@keyframes mesh-move-1 {
 		0% { transform: translate(0, 0) scale(1); }
-		100% { transform: translate(20px, 15px) scale(1.08); }
+		50% { transform: translate(10%, 5%) scale(1.05); }
+		100% { transform: translate(-5%, 10%) scale(0.95); }
+	}
+	@keyframes mesh-move-2 {
+		0% { transform: translate(0, 0) scale(1.05); }
+		50% { transform: translate(-10%, -5%) scale(0.95); }
+		100% { transform: translate(5%, -10%) scale(1); }
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.hero-orb { animation: none; }
+	/* Animated shimmer — slow-moving highlight for depth */
+	.hero-shimmer {
+		position: absolute;
+		inset: -30%;
+		background: radial-gradient(ellipse at 40% 40%, oklch(1 0 0 / 0.1), transparent 60%);
+		animation: shimmer-drift 18s ease-in-out infinite alternate;
+		pointer-events: none;
+		z-index: 1;
+	}
+	:global(:root:not(.dark)) .hero-shimmer {
+		background: radial-gradient(ellipse at 40% 40%, oklch(1 0 0 / 0.2), transparent 60%);
+	}
+	@keyframes shimmer-drift {
+		0%   { transform: translate(-12%, -8%) scale(1); }
+		50%  { transform: translate(8%, 5%) scale(1.08); }
+		100% { transform: translate(-5%, 10%) scale(1.03); }
+	}
+
+	/* Bottom scrim — ensures text contrast */
+	.hero-scrim {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, transparent 30%, oklch(0 0 0 / 0.3) 70%, oklch(0 0 0 / 0.6) 100%);
+		pointer-events: none;
+		z-index: 2;
+	}
+	:global(:root:not(.dark)) .hero-scrim {
+		background: linear-gradient(to bottom, transparent 30%, oklch(1 0 0 / 0.2) 70%, oklch(1 0 0 / 0.45) 100%);
 	}
 
 	/* Grain overlay */
 	.hero-grain {
 		position: absolute;
 		inset: 0;
-		opacity: 0.35;
+		opacity: 0.2;
 		pointer-events: none;
+		z-index: 3;
 		mix-blend-mode: overlay;
 		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 		background-size: 150px 150px;
 	}
 
+	@media (prefers-reduced-motion: reduce) {
+		.hero-shimmer, .ball-1, .ball-2, .ball-3, .ball-4 { animation: none; }
+	}
+
 	/* Content positioned at bottom */
 	.hero-content {
 		position: relative;
-		z-index: 2;
+		z-index: 5;
 		width: 100%;
-		padding: calc(3rem + env(safe-area-inset-top, 0px)) 1.25rem 1.75rem;
+		padding: calc(3.5rem + env(safe-area-inset-top, 0px)) 1.25rem 2.5rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -328,69 +427,64 @@
 	.hero-content > * {
 		opacity: 0;
 		transform: translateY(18px);
-		transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-		            transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+		transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+		            transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 	.hero-entered > * { opacity: 1; transform: translateY(0); }
 	.hero-entered > :nth-child(1) { transition-delay: 50ms; }
-	.hero-entered > :nth-child(2) { transition-delay: 130ms; }
-	.hero-entered > :nth-child(3) { transition-delay: 200ms; }
-	.hero-entered > :nth-child(4) { transition-delay: 300ms; }
-
-	@media (prefers-reduced-motion: reduce) {
-		.hero-content > * { opacity: 1; transform: none; transition: none; }
-	}
+	.hero-entered > :nth-child(2) { transition-delay: 150ms; }
+	.hero-entered > :nth-child(3) { transition-delay: 250ms; }
+	.hero-entered > :nth-child(4) { transition-delay: 400ms; }
 
 	.hero-date {
-		font-size: 0.7rem;
-		font-weight: 600;
+		font-size: 0.75rem;
+		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: oklch(1 0 0 / 0.55);
+		color: oklch(1 0 0 / 0.7);
 	}
 	:global(:root:not(.dark)) .hero-date {
-		color: oklch(0 0 0 / 0.5);
+		color: oklch(0 0 0 / 0.6);
 	}
 
 	.hero-title {
-		font-size: 2rem;
+		font-size: 2.75rem;
 		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 1.1;
-		color: oklch(1 0 0 / 0.95);
+		letter-spacing: -0.045em;
+		line-height: 1.05;
+		color: white;
+		text-wrap: balance;
 	}
 	:global(:root:not(.dark)) .hero-title {
-		color: oklch(0.12 0.005 286);
+		color: black;
 	}
 
 	.hero-name {
-		background: linear-gradient(135deg, oklch(0.82 0.17 42), oklch(0.7 0.22 18));
+		background: linear-gradient(135deg, oklch(0.9 0.15 60), oklch(0.8 0.25 30));
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 	}
 	:global(:root:not(.dark)) .hero-name {
-		background: linear-gradient(135deg, oklch(0.52 0.2 42), oklch(0.42 0.22 18));
+		background: linear-gradient(135deg, oklch(0.5 0.25 60), oklch(0.4 0.3 30));
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 	}
 
 	.hero-tagline {
-		font-size: 0.8rem;
-		color: oklch(1 0 0 / 0.45);
-		font-weight: 400;
-		font-style: italic;
+		font-size: 0.95rem;
+		color: oklch(1 0 0 / 0.7);
+		font-weight: 500;
 		line-height: 1.4;
+		max-width: 90%;
 	}
 	:global(:root:not(.dark)) .hero-tagline {
-		color: oklch(0 0 0 / 0.42);
+		color: oklch(0 0 0 / 0.6);
 	}
 	.hero-quote-author {
-		font-style: normal;
-		font-weight: 500;
-		font-size: 0.7rem;
-		opacity: 0.7;
+		font-weight: 700;
+		opacity: 0.9;
 	}
 
 	/* CTA — juicy gradient button */
@@ -398,26 +492,26 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5rem;
+		gap: 0.625rem;
 		width: 100%;
 		margin-top: 0.25rem;
 		padding: 0.875rem 1.5rem;
-		border-radius: 0.875rem;
-		background: linear-gradient(135deg, oklch(0.6 0.22 35), oklch(0.48 0.24 15));
+		border-radius: 1rem;
+		background: linear-gradient(135deg, oklch(0.65 0.25 35), oklch(0.55 0.25 15));
 		color: white;
-		font-weight: 650;
-		font-size: 0.95rem;
-		letter-spacing: 0.005em;
+		font-weight: 700;
+		font-size: 1rem;
+		letter-spacing: -0.01em;
 		text-decoration: none;
-		box-shadow:
-			0 4px 20px oklch(0.55 0.22 25 / 0.4),
-			inset 0 1px 0 oklch(1 0 0 / 0.18);
-		transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+		border: 1px solid oklch(1 0 0 / 0.2);
+		box-shadow: 0 4px 0 oklch(0.4 0.25 15);
+		transition: all 0.1s ease;
 		-webkit-tap-highlight-color: transparent;
+		text-shadow: 0 1px 2px oklch(0 0 0 / 0.2);
 	}
 	.hero-cta:active {
-		transform: scale(0.97);
-		box-shadow: 0 2px 10px oklch(0.55 0.22 25 / 0.3), inset 0 1px 0 oklch(1 0 0 / 0.12);
+		transform: translateY(2px);
+		box-shadow: 0 2px 0 oklch(0.4 0.25 15);
 	}
 
 	/* =============================================
@@ -428,7 +522,7 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 0.625rem;
 		padding: 0 0.25rem;
-		margin-top: 1rem;
+		margin-top: 0.5rem;
 		position: relative;
 		z-index: 3;
 	}

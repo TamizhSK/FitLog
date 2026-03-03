@@ -31,23 +31,23 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(0.995 0.002 286);
   --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
+  --card: oklch(0.995 0.002 286);
   --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.995 0.002 286);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.21 0.02 285.885);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.967 0.007 286.375);
+  --secondary-foreground: oklch(0.21 0.02 285.885);
+  --muted: oklch(0.967 0.006 286.375);
+  --muted-foreground: oklch(0.50 0.025 285.938);
+  --accent: oklch(0.967 0.008 286.375);
+  --accent-foreground: oklch(0.21 0.02 285.885);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
+  --border: oklch(0.92 0.008 286.32);
+  --input: oklch(0.92 0.008 286.32);
   --ring: oklch(0.705 0.015 286.067);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -147,6 +147,11 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  body::-webkit-scrollbar {
+    display: none;
   }
   /* Hide scrollbar on filter chips */
   .scrollbar-hide::-webkit-scrollbar {
@@ -362,6 +367,36 @@
   .fl-page-enter > * {
     opacity: 1;
     transform: none;
+    animation: none;
+  }
+}
+
+/* ============================================
+   VIEW TRANSITIONS — page navigation
+   ============================================ */
+@keyframes vt-fade-slide-out {
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+@keyframes vt-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: vt-fade-slide-out 150ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+::view-transition-new(root) {
+  animation: vt-fade-slide-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
     animation: none;
   }
 }
