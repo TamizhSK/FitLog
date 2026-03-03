@@ -32,15 +32,16 @@
 		return () => window.removeEventListener('scroll', onScroll);
 	});
 
-	onNavigate((navigation) => {
-		if (!document.startViewTransition) return;
-		return new Promise((resolve) => {
-			document.startViewTransition(async () => {
-				resolve();
-				await navigation.complete;
-			});
-		});
-	});
+	// Disable View Transitions - they cause jarring page changes
+	// onNavigate((navigation) => {
+	// 	if (!document.startViewTransition) return;
+	// 	return new Promise((resolve) => {
+	// 		document.startViewTransition(async () => {
+	// 			resolve();
+	// 			await navigation.complete;
+	// 		});
+	// 	});
+	// });
 </script>
 
 <svelte:head>
@@ -96,7 +97,6 @@
 		padding: 0 1.125rem 0.5rem;
 		height: calc(3rem + env(safe-area-inset-top, 0px));
 		pointer-events: none;
-		view-transition-name: brand-strip;
 	}
 
 	.brand-name {
@@ -125,7 +125,6 @@
 		max-width: 80rem;
 		margin: 0 auto;
 		padding: calc(3rem + env(safe-area-inset-top, 0px)) 1rem calc(80px + env(safe-area-inset-bottom, 0px));
-		view-transition-name: page-content;
 	}
 	@media (min-width: 640px) {
 		.app-main {

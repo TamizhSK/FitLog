@@ -372,22 +372,22 @@
 }
 
 /* ============================================
-   VIEW TRANSITIONS — page navigation
+   VIEW TRANSITIONS — DISABLED (caused jarring navigation)
    ============================================ */
-::view-transition-old(page-content) {
+/* ::view-transition-old(page-content) {
   animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-fade-out;
 }
 ::view-transition-new(page-content) {
   animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) both vt-fade-in;
-}
+} */
 
-/* Ensure fixed UI remains completely static during transitions */
-::view-transition-old(bottom-nav),
+/* Disabled - View Transitions removed */
+/* ::view-transition-old(bottom-nav),
 ::view-transition-new(bottom-nav),
 ::view-transition-old(brand-strip),
 ::view-transition-new(brand-strip) {
   animation: none !important;
-}
+} */
 
 @keyframes vt-fade-out {
   from { opacity: 1; }
