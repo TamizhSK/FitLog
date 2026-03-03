@@ -96,7 +96,6 @@
 		padding: 0 1.125rem 0.5rem;
 		height: calc(3rem + env(safe-area-inset-top, 0px));
 		pointer-events: none;
-		view-transition-name: brand-strip;
 	}
 
 	.brand-name {
