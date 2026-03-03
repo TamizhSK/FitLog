@@ -1,4 +1,4 @@
-import Fuse from 'fuse.js';
+import Fuse, { type IFuseOptions } from 'fuse.js';
 import type { Exercise } from '$lib/types/exercise';
 
 let exercises = $state<Exercise[]>([]);
@@ -9,7 +9,7 @@ let searchQuery = $state('');
 let selectedBodyPart = $state('ALL');
 let selectedEquipment = $state('ALL');
 
-const fuseOptions: Fuse.IFuseOptions<Exercise> = {
+const fuseOptions: IFuseOptions<Exercise> = {
 	keys: [
 		{ name: 'name', weight: 2 },
 		{ name: 'targetMuscles', weight: 1.5 },

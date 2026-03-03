@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 import { saveWorkout } from '$lib/db/workouts';
-import { v4 as uuidv4 } from 'uuid';
 
 export type HiitPhase = 'idle' | 'countdown' | 'work' | 'rest' | 'done';
 
@@ -179,7 +178,7 @@ async function finalizeWorkout() {
 	}
 
 	const workout = {
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		date: new Date().toISOString().split('T')[0],
 		startTime,
 		endTime,
@@ -290,4 +289,3 @@ function advancePhase() {
 		return;
 	}
 }
-

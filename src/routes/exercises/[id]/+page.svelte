@@ -22,7 +22,7 @@
 	} from '@lucide/svelte';
 	import type { Exercise } from '$lib/types/exercise';
 
-	let exercise = $derived(getExerciseById(page.params.id));
+	let exercise = $derived(getExerciseById(page.params.id ?? ''));
 	let related = $derived(exercise ? getRelatedExercises(exercise) : []);
 	let showVideo = $state(false);
 	let imgError = $state(false);

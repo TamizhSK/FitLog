@@ -54,7 +54,7 @@
 		padding: 0 0.75rem;
 		padding-bottom: env(safe-area-inset-bottom, 0px);
 		pointer-events: none;
-		view-transition-name: bottom-nav;
+		view-transition-name: none;
 	}
 
 	.dock-wrap :global(.dock-bar) {

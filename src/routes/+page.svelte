@@ -460,16 +460,41 @@
 	}
 
 	.hero-name {
-		background: linear-gradient(135deg, oklch(0.9 0.15 60), oklch(0.8 0.25 30));
+		font-weight: 900;
+		background: linear-gradient(
+			110deg,
+			oklch(0.7 0.2 45) 0%,
+			oklch(0.8 0.18 55) 25%,
+			oklch(0.9 0.12 70) 50%,
+			oklch(0.8 0.18 55) 75%,
+			oklch(0.7 0.2 45) 100%
+		);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: hero-shimmer 15s ease-in-out infinite;
+		display: inline-block;
+	}
+	:global(:root:not(.dark)) .hero-name {
+		background: linear-gradient(
+			110deg,
+			oklch(0.55 0.18 45) 0%,
+			oklch(0.65 0.15 55) 25%,
+			oklch(0.75 0.12 65) 50%,
+			oklch(0.65 0.15 55) 75%,
+			oklch(0.55 0.18 45) 100%
+		);
+		background-size: 200% auto;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 	}
-	:global(:root:not(.dark)) .hero-name {
-		background: linear-gradient(135deg, oklch(0.5 0.25 60), oklch(0.4 0.3 30));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+
+	@keyframes hero-shimmer {
+		0% { background-position: 0% center; }
+		50% { background-position: 100% center; }
+		100% { background-position: 0% center; }
 	}
 
 	.hero-tagline {

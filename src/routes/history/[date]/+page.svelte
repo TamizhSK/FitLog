@@ -15,7 +15,7 @@
 	let loading = $state(true);
 	let prefs = $derived(getPreferences());
 
-	let dateStr = $derived(page.params.date);
+	let dateStr = $derived(page.params.date ?? '');
 	let formattedDate = $derived(
 		new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
 			weekday: 'long',
