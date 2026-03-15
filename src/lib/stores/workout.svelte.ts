@@ -8,15 +8,19 @@ interface ActiveExercise {
 	sets: SetLog[];
 }
 
+// --- Workout session state ---
 let active = $state(false);
 let timerStarted = $state(false);
+let timerPaused = $state(false);
 let startTime = $state<string | null>(null);
+let pauseOffset = $state(0); // Total ms spent paused
+let pausedAt = $state<number | null>(null); // Timestamp when current pause began
 let exercises = $state<ActiveExercise[]>([]);
 let currentIndex = $state(0);
 let elapsedSeconds = $state(0);
 let timerInterval = $state<ReturnType<typeof setInterval> | null>(null);
 
-// Rest timer state
+// --- Rest timer state ---
 let restActive = $state(false);
 let restRemaining = $state(0);
 let restTotal = $state(0);
@@ -24,7 +28,14 @@ let restStartedAt = $state<number | null>(null);
 let restInterval = $state<ReturnType<typeof setInterval> | null>(null);
 let restCompletedNaturally = $state(false);
 
+// --- Countdown state ---
+let countdownActive = $state(false);
+let countdownValue = $state(0);
+let countdownTimeout = $state<ReturnType<typeof setTimeout> | null>(null);
+
 const AUTOSAVE_KEY = 'fitlog-active-workout';
+
+// --- Getters ---
 
 export function isWorkoutActive(): boolean {
 	return active;
@@ -32,6 +43,18 @@ export function isWorkoutActive(): boolean {
 
 export function isTimerStarted(): boolean {
 	return timerStarted;
+}
+
+export function isTimerPaused(): boolean {
+	return timerPaused;
+}
+
+export function isCountdownActive(): boolean {
+	return countdownActive;
+}
+
+export function getCountdownValue(): number {
+	return countdownValue;
 }
 
 export function getActiveExercises(): ActiveExercise[] {
@@ -50,11 +73,15 @@ export function getElapsedSeconds(): number {
 	return elapsedSeconds;
 }
 
-// Phase 1: Set up exercises (no timer yet)
+// --- Phase 1: Set up exercises (no timer yet) ---
+
 export function startWorkout(selectedExercises: Exercise[]) {
 	active = true;
 	timerStarted = false;
+	timerPaused = false;
 	startTime = null;
+	pauseOffset = 0;
+	pausedAt = null;
 	exercises = selectedExercises.map((exercise) => ({
 		exercise,
 		sets: [{ setNumber: 1, reps: 0, weight: 0, completed: false }]
@@ -64,15 +91,70 @@ export function startWorkout(selectedExercises: Exercise[]) {
 	autosave();
 }
 
-// Phase 2: Begin the timed session
+// --- Countdown (3→2→1→GO) ---
+
+export function startCountdown(onComplete: () => void) {
+	stopCountdown();
+	countdownActive = true;
+	countdownValue = 3;
+
+	const tick = () => {
+		if (countdownValue <= 1) {
+			countdownActive = false;
+			countdownValue = 0;
+			onComplete();
+			return;
+		}
+		countdownValue--;
+		countdownTimeout = setTimeout(tick, 1000);
+	};
+
+	countdownTimeout = setTimeout(tick, 1000);
+}
+
+function stopCountdown() {
+	if (countdownTimeout) {
+		clearTimeout(countdownTimeout);
+		countdownTimeout = null;
+	}
+	countdownActive = false;
+	countdownValue = 0;
+}
+
+// --- Phase 2: Begin the timed session ---
+
 export function beginTimedSession() {
 	if (!active) return;
 	timerStarted = true;
+	timerPaused = false;
 	startTime = new Date().toISOString();
+	pauseOffset = 0;
+	pausedAt = null;
 	elapsedSeconds = 0;
 	startTimer();
 	autosave();
 }
+
+// --- Pause / Resume ---
+
+export function pauseTimer() {
+	if (!timerStarted || timerPaused) return;
+	timerPaused = true;
+	pausedAt = Date.now();
+	stopTimerInterval();
+	autosave();
+}
+
+export function resumeTimer() {
+	if (!timerStarted || !timerPaused || !pausedAt) return;
+	pauseOffset += Date.now() - pausedAt;
+	pausedAt = null;
+	timerPaused = false;
+	startTimer();
+	autosave();
+}
+
+// --- Exercise management ---
 
 export function addExerciseToWorkout(exercise: Exercise) {
 	if (!active) {
@@ -142,9 +224,12 @@ export function removeSet(exerciseIndex: number, setIndex: number) {
 	autosave();
 }
 
+// --- Finish / Cancel ---
+
 export async function finishWorkout(): Promise<WorkoutLog> {
 	stopTimer();
 	stopRest();
+	stopCountdown();
 	const endTime = new Date().toISOString();
 
 	const now = new Date();
@@ -174,9 +259,12 @@ export async function finishWorkout(): Promise<WorkoutLog> {
 export function cancelWorkout() {
 	stopTimer();
 	stopRest();
+	stopCountdown();
 	clearAutosave();
 	resetState();
 }
+
+// --- Restore ---
 
 export function restoreWorkout() {
 	if (!browser) return false;
@@ -189,9 +277,20 @@ export function restoreWorkout() {
 		startTime = data.startTime;
 		exercises = data.exercises;
 		currentIndex = data.currentIndex;
-		if (timerStarted && startTime) {
-			// Compute elapsed from wall clock for accuracy
-			elapsedSeconds = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
+		pauseOffset = data.pauseOffset ?? 0;
+
+		if (data.timerPaused) {
+			// Was paused when saved — stay paused, preserve elapsed
+			timerPaused = true;
+			pausedAt = data.pausedAt ?? Date.now();
+			elapsedSeconds = data.elapsedSeconds ?? 0;
+		} else if (timerStarted && startTime) {
+			timerPaused = false;
+			pausedAt = null;
+			// Recompute elapsed from wall clock minus pause time
+			elapsedSeconds = Math.floor(
+				(Date.now() - new Date(startTime).getTime() - pauseOffset) / 1000
+			);
 			startTimer();
 		} else {
 			elapsedSeconds = 0;
@@ -203,11 +302,13 @@ export function restoreWorkout() {
 	}
 }
 
+// --- Timer internals ---
+
 function startTimer() {
-	stopTimer();
+	stopTimerInterval();
 	recalcElapsed();
-	// Run at ~60fps for smooth UI updates
-	timerInterval = setInterval(recalcElapsed, 16);
+	// Tick every 1s — display only shows whole seconds, no need for 60fps
+	timerInterval = setInterval(recalcElapsed, 1000);
 
 	if (browser) {
 		document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -216,21 +317,27 @@ function startTimer() {
 
 function recalcElapsed() {
 	if (startTime) {
-		elapsedSeconds = (Date.now() - new Date(startTime).getTime()) / 1000;
+		elapsedSeconds = Math.floor(
+			(Date.now() - new Date(startTime).getTime() - pauseOffset) / 1000
+		);
 	}
 }
 
 function handleVisibilityChange() {
-	if (!document.hidden && active && startTime) {
+	if (!document.hidden && active && startTime && !timerPaused) {
 		recalcElapsed();
 	}
 }
 
-function stopTimer() {
+function stopTimerInterval() {
 	if (timerInterval) {
 		clearInterval(timerInterval);
 		timerInterval = null;
 	}
+}
+
+function stopTimer() {
+	stopTimerInterval();
 	if (browser) {
 		document.removeEventListener('visibilitychange', handleVisibilityChange);
 	}
@@ -239,7 +346,10 @@ function stopTimer() {
 function resetState() {
 	active = false;
 	timerStarted = false;
+	timerPaused = false;
 	startTime = null;
+	pauseOffset = 0;
+	pausedAt = null;
 	exercises = [];
 	currentIndex = 0;
 	elapsedSeconds = 0;
@@ -252,6 +362,9 @@ function autosave() {
 		JSON.stringify({
 			startTime,
 			timerStarted,
+			timerPaused,
+			pauseOffset,
+			pausedAt,
 			exercises,
 			currentIndex,
 			elapsedSeconds
@@ -273,16 +386,17 @@ export function startRest(seconds: number) {
 	restStartedAt = Date.now();
 	restActive = true;
 	restCompletedNaturally = false;
+	// Tick every 1s — rest timer displays whole seconds only
 	restInterval = setInterval(() => {
 		if (restStartedAt) {
 			const elapsed = (Date.now() - restStartedAt) / 1000;
-			restRemaining = Math.max(0, restTotal - elapsed);
+			restRemaining = Math.max(0, Math.ceil(restTotal - elapsed));
 			if (restRemaining <= 0) {
 				restCompletedNaturally = true;
 				stopRest();
 			}
 		}
-	}, 16);
+	}, 1000);
 }
 
 export function adjustRest(delta: number) {
@@ -293,7 +407,7 @@ export function adjustRest(delta: number) {
 		restStartedAt += delta * 1000;
 	}
 	const elapsed = restStartedAt ? (Date.now() - restStartedAt) / 1000 : 0;
-	restRemaining = Math.max(0, restTotal - elapsed);
+	restRemaining = Math.max(0, Math.ceil(restTotal - elapsed));
 }
 
 export function skipRest() {

@@ -51,11 +51,15 @@
 			{ text: 'Today I will do what others won\'t, so tomorrow I can do what others can\'t.', author: 'Jerry Rice' },
 			{ text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
 			{ text: 'You don\'t have to be great to start, but you have to start to be great.', author: 'Zig Ziglar' },
-			{ text: 'Every morning brings new potential, but if you dwell on the misfortunes of the day before, you tend to overlook tremendous opportunities.', author: 'Harvey Mackay' },
 			{ text: 'Discipline is the bridge between goals and accomplishment.', author: 'Jim Rohn' },
 			{ text: 'The early morning has gold in its mouth.', author: 'Benjamin Franklin' },
 			{ text: 'It\'s not about having time. It\'s about making time.', author: 'Serena Williams' },
 			{ text: 'I run because if I didn\'t, I\'d be sluggish and I\'d feel bad about myself.', author: 'Michelle Obama' },
+			{ text: 'I\'ve failed over and over and over again in my life. And that is why I succeed.', author: 'Michael Jordan' },
+			{ text: 'You have to expect things of yourself before you can do them.', author: 'Michael Jordan' },
+			{ text: 'The most important thing is to try and inspire people so that they can be great in whatever they want to do.', author: 'Kobe Bryant' },
+			{ text: 'Everything negative — pressure, challenges — is all an opportunity for me to rise.', author: 'Kobe Bryant' },
+			{ text: 'You are never really playing an opponent. You are playing yourself.', author: 'Serena Williams' },
 		],
 		afternoon: [
 			{ text: 'Strength does not come from the body. It comes from the will.', author: 'Mahatma Gandhi' },
@@ -64,14 +68,20 @@
 			{ text: 'The clock is ticking. Are you becoming the person you want to be?', author: 'Greg Plitt' },
 			{ text: 'What hurts today makes you stronger tomorrow.', author: 'Jay Cutler' },
 			{ text: 'Your body can stand almost anything. It\'s your mind you have to convince.', author: 'David Goggins' },
-			{ text: 'Obsessed is a word the lazy use to describe the dedicated.', author: 'Grant Cardone' },
 			{ text: 'You miss 100% of the shots you don\'t take.', author: 'Wayne Gretzky' },
 			{ text: 'I fear not the man who has practiced 10,000 kicks once, but the man who has practiced one kick 10,000 times.', author: 'Bruce Lee' },
-			{ text: 'To keep the body in good health is a duty, otherwise we shall not be able to keep the mind strong and clear.', author: 'Buddha' },
 			{ text: 'All progress takes place outside the comfort zone.', author: 'Michael John Bobak' },
 			{ text: 'When you hit failure, your workout has just begun.', author: 'Ronnie Coleman' },
 			{ text: 'Iron is the great reference point. Two hundred pounds is always two hundred pounds.', author: 'Henry Rollins' },
 			{ text: 'A champion is someone who gets up when they can\'t.', author: 'Jack Dempsey' },
+			{ text: 'Suffering is the true test of life.', author: 'David Goggins' },
+			{ text: 'Be water, my friend.', author: 'Bruce Lee' },
+			{ text: 'Knowing is not enough, we must apply. Willing is not enough, we must do.', author: 'Bruce Lee' },
+			{ text: 'Some people want it to happen, some wish it would happen, others make it happen.', author: 'Michael Jordan' },
+			{ text: 'Obstacles don\'t have to stop you. If you run into a wall, don\'t turn around. Figure out how to climb it.', author: 'Michael Jordan' },
+			{ text: 'I can\'t relate to lazy people. We don\'t speak the same language.', author: 'Kobe Bryant' },
+			{ text: 'A trophy carries dust. Memories last forever.', author: 'Mary Lou Retton' },
+			{ text: 'Float like a butterfly, sting like a bee.', author: 'Muhammad Ali' },
 		],
 		evening: [
 			{ text: 'I hated every minute of training, but I said don\'t quit.', author: 'Muhammad Ali' },
@@ -87,7 +97,13 @@
 			{ text: 'The real workout starts when you want to stop.', author: 'Ronnie Coleman' },
 			{ text: 'Motivation is what gets you started. Habit is what keeps you going.', author: 'Jim Ryun' },
 			{ text: 'Suffer the pain of discipline or suffer the pain of regret.', author: 'Jim Rohn' },
-			{ text: 'If you think lifting is dangerous, try being weak. Being weak is dangerous.', author: 'Bret Contreras' },
+			{ text: 'He who is not courageous enough to take risks will accomplish nothing in life.', author: 'Muhammad Ali' },
+			{ text: 'It ain\'t about how hard you hit. It\'s about how hard you can get hit and keep moving forward.', author: 'Sylvester Stallone' },
+			{ text: 'The man who has no imagination has no wings.', author: 'Muhammad Ali' },
+			{ text: 'Luck is the last dying wish of those who want to believe that winning can happen by accident.', author: 'David Goggins' },
+			{ text: 'Heroes and cowards feel exactly the same fear. Heroes just react to it differently.', author: 'Kobe Bryant' },
+			{ text: 'The moment you give up is the moment you let someone else win.', author: 'Kobe Bryant' },
+			{ text: 'I really think a champion is defined not by their wins but by how they can recover when they fall.', author: 'Serena Williams' },
 		],
 		night: [
 			{ text: 'The fight is won or lost far away from witnesses.', author: 'Muhammad Ali' },
@@ -97,25 +113,35 @@
 			{ text: 'Recovery is just as important as the workout itself.', author: 'Ronnie Coleman' },
 			{ text: 'The successful warrior is the average man with laser-like focus.', author: 'Bruce Lee' },
 			{ text: 'Rome wasn\'t built in a day, but they worked on it every single day.', author: 'John Heywood' },
-			{ text: 'Your love for what you do and willingness to push yourself where others aren\'t prepared to go is what will make you great.', author: 'Laurence Shahlaei' },
 			{ text: 'The groundwork for all happiness is good health.', author: 'Leigh Hunt' },
 			{ text: 'Fitness is not about being better than someone else. It\'s about being better than you used to be.', author: 'Khloe Kardashian' },
 			{ text: 'The last rep is where the magic happens.', author: 'Kai Greene' },
-			{ text: 'Respect your body. It\'s the only one you get.', author: 'Astrid Alauda' },
 			{ text: 'Training gives us an outlet for suppressed energies created by stress and thus tones the spirit just as exercise conditions the body.', author: 'Arnold Schwarzenegger' },
-			{ text: 'Good things come to those who sweat.', author: 'Unknown' },
+			{ text: 'Do not pray for an easy life. Pray for the strength to endure a difficult one.', author: 'Bruce Lee' },
+			{ text: 'The mind is the limit. As long as the mind can envision that you can do something, you can do it.', author: 'Arnold Schwarzenegger' },
+			{ text: 'Hard work beats talent when talent doesn\'t work hard.', author: 'Tim Notke' },
+			{ text: 'If you\'re afraid to fail, then you\'re probably going to fail.', author: 'Kobe Bryant' },
+			{ text: 'Rest but never quit. Even the sun has a sinking spell each evening. But it always rises the next morning.', author: 'Muhammad Ali' },
+			{ text: 'We don\'t rise to the level of our expectations; we fall to the level of our training.', author: 'David Goggins' },
+			{ text: 'Talent you have naturally. Skill is only developed by hours and hours of beating on your craft.', author: 'Michael Jordan' },
 		],
 	};
 
+	// Deterministic daily quote — same quote all day, changes per time period
 	const quote = (() => {
-		const hour = new Date().getHours();
+		const now = new Date();
+		const hour = now.getHours();
 		let period: string;
 		if (hour >= 5 && hour < 12) period = 'morning';
 		else if (hour >= 12 && hour < 17) period = 'afternoon';
 		else if (hour >= 17 && hour < 21) period = 'evening';
 		else period = 'night';
 		const pool = quotesByTime[period];
-		return pool[Math.floor(Math.random() * pool.length)];
+		// Use day of year as index for consistent daily selection
+		const dayOfYear = Math.floor(
+			(now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
+		);
+		return pool[dayOfYear % pool.length];
 	})();
 
 	function reveal(node: HTMLElement) {

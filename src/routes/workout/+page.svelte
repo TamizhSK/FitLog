@@ -218,7 +218,8 @@
 		<p class="fl-page-subtitle">Pick exercises or jump right in</p>
 	</div>
 
-	<!-- Quick Start -->
+	<!-- Quick Start — hidden when exercises are selected -->
+	{#if selected.length === 0}
 	<button onclick={quickStart} class="quick-start-btn">
 		<Zap class="h-5 w-5" />
 		<div class="text-left">
@@ -227,8 +228,10 @@
 		</div>
 		<ChevronRight class="ml-auto h-4 w-4 opacity-30" />
 	</button>
+	{/if}
 
-	<!-- Templates -->
+	<!-- Templates — hidden when exercises are selected -->
+	{#if selected.length === 0}
 	<div>
 		<div class="fl-section-header">
 			<div class="fl-section-icon">
@@ -298,6 +301,8 @@
 			{/if}
 		{/each}
 	</div>
+
+	{/if}
 
 	<!-- Exercise Picker -->
 	<div>
@@ -385,7 +390,7 @@
 	<!-- Start button -->
 	{#if selected.length > 0}
 		<div class="h-24"></div>
-		<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 flex flex-col gap-2 md:bottom-4">
+		<div class="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-10 flex flex-col gap-2 md:bottom-4">
 			<div class="flex gap-2">
 				<button onclick={startWithSelected} class="cta-btn flex-1">
 					<Play class="h-5 w-5" fill="currentColor" />

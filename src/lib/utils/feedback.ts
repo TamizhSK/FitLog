@@ -1,18 +1,6 @@
 import { getPreferences } from '$lib/stores/preferences.svelte';
-import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
-// --- Platform detection ---
-
-const isNative = Capacitor.isNativePlatform();
-
-const isIOS = (() => {
-	if (typeof navigator === 'undefined') return false;
-	return /iP(hone|ad|od)/.test(navigator.userAgent) ||
-		(navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
-})();
-
-// --- Audio (unchanged) ---
+// --- Audio ---
 
 let _audioCtx: AudioContext | null = null;
 function getAudioContext(): AudioContext | null {
@@ -28,7 +16,6 @@ function getAudioContext(): AudioContext | null {
 
 /**
  * Play a short tone if sound is enabled.
- * On web iOS this also substitutes for haptic feedback.
  */
 export function beep(frequency = 880, durationMs = 150, volume = 0.2) {
 	const prefs = getPreferences();
@@ -51,80 +38,41 @@ export function beep(frequency = 880, durationMs = 150, volume = 0.2) {
 		osc.start(ctx.currentTime);
 		osc.stop(ctx.currentTime + durationMs / 1000 + 0.01);
 	} catch {
-		// AudioContext not available or suspended
-	}
-}
-
-// --- Haptics ---
-
-/**
- * Trigger haptic feedback respecting user preferences.
- *
- * Native (Capacitor): uses Taptic Engine (iOS) / Vibration motor (Android)
- * Web Android: navigator.vibrate()
- * Web iOS: no-op (audio fallback handled by callers)
- */
-function haptic(
-	style: ImpactStyle = ImpactStyle.Medium,
-	webPattern: number | number[] = 50
-) {
-	const prefs = getPreferences();
-	if (!prefs.vibrationEnabled) return;
-
-	if (isNative) {
-		Haptics.impact({ style }).catch(() => {});
-		return;
-	}
-
-	// Web fallback
-	if (isIOS) return;
-	try {
-		if (navigator.vibrate) {
-			navigator.vibrate(webPattern);
-		}
-	} catch {
-		// Vibration API not available
-	}
-}
-
-/** Notification-style haptic (native only, falls back to impact on web) */
-function hapticNotification(type: NotificationType, webPattern: number | number[] = 50) {
-	const prefs = getPreferences();
-	if (!prefs.vibrationEnabled) return;
-
-	if (isNative) {
-		Haptics.notification({ type }).catch(() => {});
-		return;
-	}
-
-	if (isIOS) return;
-	try {
-		if (navigator.vibrate) {
-			navigator.vibrate(webPattern);
-		}
-	} catch {
-		// Vibration API not available
+		// AudioContext not available
 	}
 }
 
 // --- Public feedback functions ---
 
-/** Light tap — set completion, button confirmations */
+/** Light tap sound — set completion, button confirmations */
 export function tapFeedback() {
-	haptic(ImpactStyle.Light, 30);
-	// Web iOS substitute: very short quiet tick
-	if (!isNative && isIOS) beep(660, 40, 0.08);
+	beep(660, 40, 0.08);
 }
 
-/** Medium pulse — session start */
+/** Countdown tick — short percussive tone for 3, 2, 1 */
+export function countdownTick() {
+	beep(880, 80, 0.15);
+}
+
+/** Countdown complete — higher ascending tone to signal GO */
+export function countdownGo() {
+	beep(1100, 200, 0.25);
+}
+
+/** Session start — ascending two-tone */
 export function startFeedback() {
-	hapticNotification(NotificationType.Success, [40, 30, 40]);
 	beep(660, 100, 0.15);
+	setTimeout(() => beep(880, 100, 0.15), 120);
 }
 
-/** Celebration — session finish */
+/** Rest timer complete — double beep alert */
+export function restEndFeedback() {
+	beep(880, 150, 0.25);
+	setTimeout(() => beep(880, 150, 0.25), 300);
+}
+
+/** Celebration — session finish, two ascending tones */
 export function finishFeedback() {
-	hapticNotification(NotificationType.Success, [100, 50, 100, 50, 150]);
 	beep(880, 150, 0.2);
 	setTimeout(() => beep(1100, 200, 0.25), 200);
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly, fade } from 'svelte/transition';
 	import { Button } from '$lib/components/ui/button';
-	import { Minus, Plus, SkipForward } from '@lucide/svelte';
+	import { Minus, Plus, SkipForward, Pause, Play } from '@lucide/svelte';
 	import {
 		getElapsedSeconds,
 		isRestActive,
@@ -11,7 +11,10 @@
 		skipRest,
 		formatDuration,
 		getActiveExercises,
-		getCurrentIndex
+		getCurrentIndex,
+		isTimerPaused,
+		pauseTimer,
+		resumeTimer
 	} from '$lib/stores/workout.svelte';
 	import { getPreferences } from '$lib/stores/preferences.svelte';
 
@@ -23,6 +26,7 @@
 	let currentIdx = $derived(getCurrentIndex());
 	let currentExercise = $derived(exercises[currentIdx]);
 	let prefs = $derived(getPreferences());
+	let paused = $derived(isTimerPaused());
 
 	// SVG ring constants
 	const SIZE = 200;
@@ -51,11 +55,12 @@
 
 	// Center display
 	let displayTime = $derived(resting ? formatRestTime(restRemaining) : formatDuration(elapsed));
-	let displayLabel = $derived(resting ? 'REST' : 'WORKOUT');
+	let displayLabel = $derived(resting ? 'REST' : paused ? 'PAUSED' : 'WORKOUT');
 
 	function formatRestTime(s: number): string {
-		const m = Math.floor(s / 60);
-		const sec = s % 60;
+		const totalSec = Math.ceil(s);
+		const m = Math.floor(totalSec / 60);
+		const sec = totalSec % 60;
 		return `${m}:${String(sec).padStart(2, '0')}`;
 	}
 
@@ -66,6 +71,14 @@
 			.filter(s => s.completed)
 			.slice(-4);
 	});
+
+	function togglePause() {
+		if (paused) {
+			resumeTimer();
+		} else {
+			pauseTimer();
+		}
+	}
 </script>
 
 <div class="flex flex-col items-center gap-4">
@@ -143,6 +156,21 @@
 				</span>
 			{/each}
 		</div>
+	{/if}
+
+	<!-- Pause/Resume button (when not resting) -->
+	{#if !resting}
+		<button
+			onclick={togglePause}
+			class="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-muted/50 transition-all active:scale-95"
+			aria-label={paused ? 'Resume' : 'Pause'}
+		>
+			{#if paused}
+				<Play class="h-5 w-5 text-green-400" />
+			{:else}
+				<Pause class="h-5 w-5 text-muted-foreground" />
+			{/if}
+		</button>
 	{/if}
 
 	<!-- Rest controls -->

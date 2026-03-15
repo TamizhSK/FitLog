@@ -24,7 +24,10 @@
 		startRest,
 		isRestActive,
 		didRestCompleteNaturally,
-		clearRestCompletedFlag
+		clearRestCompletedFlag,
+		startCountdown,
+		isCountdownActive,
+		getCountdownValue
 	} from '$lib/stores/workout.svelte';
 	import {
 		loadExercises,
@@ -35,7 +38,7 @@
 	import { getLastWorkoutForExercise } from '$lib/db/workouts';
 	import { getPreferences } from '$lib/stores/preferences.svelte';
 	import { isWeighted } from '$lib/utils/exercise';
-	import { tapFeedback, startFeedback, finishFeedback, beep } from '$lib/utils/feedback';
+	import { tapFeedback, startFeedback, finishFeedback, restEndFeedback, countdownTick, countdownGo } from '$lib/utils/feedback';
 	import ExerciseLogger from '$lib/components/workout/ExerciseLogger.svelte';
 	import WorkoutRing from '$lib/components/workout/WorkoutRing.svelte';
 	import type { WorkoutLog, SetLog } from '$lib/types/workout';
@@ -72,6 +75,8 @@
 	let elapsed = $derived(getElapsedSeconds());
 	let currentExercise = $derived(exercises[currentIdx]);
 	let prefs = $derived(getPreferences());
+	let countdownOn = $derived(isCountdownActive());
+	let countdownVal = $derived(getCountdownValue());
 
 	// Add exercise search
 	let addQuery = $derived(getSearchQuery());
@@ -109,16 +114,22 @@
 		previousSetsMap = map;
 	}
 
-	// Watch for rest timer natural completion → play alert
+	// Watch for rest timer natural completion → play sound alert
 	$effect(() => {
 		if (didRestCompleteNaturally()) {
-			beep(880, 150, 0.3);
-			setTimeout(() => beep(880, 150, 0.3), 400);
-			if (prefs.vibrationEnabled && navigator.vibrate) {
-				navigator.vibrate([200, 100, 200]);
-			}
+			restEndFeedback();
 			clearRestCompletedFlag();
 		}
+	});
+
+	// Play countdown sounds
+	let prevCountdownVal = 0;
+	$effect(() => {
+		const val = countdownVal;
+		if (countdownOn && val > 0 && val !== prevCountdownVal) {
+			countdownTick();
+		}
+		prevCountdownVal = val;
 	});
 
 	function handleSetCompleted() {
@@ -151,8 +162,12 @@
 
 	function handleStartSession() {
 		if (exercises.length === 0) return;
-		startFeedback();
-		beginTimedSession();
+		// Start 3→2→1 countdown, then begin session
+		startCountdown(() => {
+			countdownGo();
+			startFeedback();
+			beginTimedSession();
+		});
 	}
 
 	function goToExercise(index: number) {
@@ -192,6 +207,25 @@
 		}, 0);
 	}
 </script>
+
+<!-- Countdown Overlay -->
+{#if countdownOn}
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm">
+		<div class="text-center">
+			{#key countdownVal}
+				<span
+					class="countdown-number"
+					in:scale={{ duration: 300, start: 0.5 }}
+				>
+					{countdownVal}
+				</span>
+			{/key}
+			<p class="mt-4 text-sm font-medium uppercase tracking-widest text-muted-foreground">
+				Get Ready
+			</p>
+		</div>
+	</div>
+{/if}
 
 <!-- Workout Summary (after finishing) -->
 {#if finishedWorkout}
@@ -275,7 +309,7 @@
 	</div>
 
 <!-- SETUP PHASE: Configure exercises before starting timer -->
-{:else if ready && active && !timerOn}
+{:else if ready && active && !timerOn && !countdownOn}
 	<div class="space-y-5">
 		<div class="flex items-center justify-between">
 			<div>
@@ -462,7 +496,7 @@
 		<!-- Start Session button -->
 		{#if exercises.length > 0}
 			<div class="h-20"></div>
-			<div class="sticky bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] z-10 md:bottom-4">
+			<div class="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] z-10 md:bottom-4">
 				<Button
 					onclick={handleStartSession}
 					size="lg"
@@ -606,3 +640,18 @@
 		</div>
 	</div>
 {/if}
+
+<style>
+	.countdown-number {
+		display: inline-block;
+		font-size: 8rem;
+		font-weight: 900;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		background: linear-gradient(135deg, oklch(0.65 0.25 35), oklch(0.55 0.25 15));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		filter: drop-shadow(0 4px 24px oklch(0.5 0.2 30 / 0.3));
+	}
+</style>
